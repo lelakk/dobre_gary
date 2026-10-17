@@ -1,0 +1,43 @@
+# Env / Secrets
+.env
+.env.*
+*.env
+*.local
+config.local.*
+
+# Maven / Java
+target/
+build/
+*.class
+*.jar
+*.war
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+.venv/
+
+# IDEs / Editors
+.idea/
+*.iml
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs / Temporary Files
+*.log
+*.tmp
+*.swp
+
+# Operating System
+.DS_Store
+Thumbs.db
+desktop.ini
