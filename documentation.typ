@@ -53,3 +53,56 @@ W projekcie występują następujące relacje między encjami:
 *Relacje N:M (wiele do wielu):*
 - `products` (N) $<->$ (M) `categories` poprzez tabelę asocjacyjną `product_categories` (produkt może należeć do kilku kategorii, a kategoria zawiera wiele produktów).
 
+#pagebreak()
+
+= Słownik danych
+
+// Konfiguracja wyglądu tabel
+#show table.cell.where(y: 0): set text(weight: "bold", fill: white)
+#set table(
+  stroke: 0.5pt + luma(200),
+  inset: (x: 7pt, y: 5.5pt),
+  fill: (x, y) => if y == 0 { rgb("#2b4c7e") } else if calc.even(y) { luma(246) } else { white },
+)
+
+// Funkcja pomocnicza generująca sekcję dla pojedynczej tabeli SQL
+#let slownik-tabela(nazwa, opis, ..wiersze) = block(breakable: false, width: 100%, below: 1.4em)[
+  === Tabela #raw(nazwa)
+  #opis
+  #text(size: 9pt)[
+    #table(
+      columns: (1.3fr, 1.2fr, 1.8fr, 2.3fr),
+      align: (left + horizon, left + horizon, left + horizon, left + horizon),
+      table.header(
+        [Kolumna], [Typ danych], [Ograniczenia (Constraints)], [Opis atrybutu]
+      ),
+      ..wiersze
+    )
+  ]
+]
+
+#slownik-tabela(
+  "users",
+  [Przechowuje dane kont zarejestrowanych klientów sklepu (zarówno klientów indywidualnych, jak i przedstawicieli restauracji). Stanowi główną encję uwierzytelniania oraz właściciela zamówień i książki adresowej.],
+  [`user_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator klienta],
+  [`email`], [`VARCHAR(255)`], [`NOT NULL`, `UNIQUE`, `CHECK` (format e-mail, bez białych znaków)], [Adres e-mail (służy jako login użytkownika)],
+  [`password_hash`], [`VARCHAR(255)`], [`NOT NULL`, `CHECK` (długość ≥ 20 znaków)], [Zahaszowane hasło użytkownika (np. algorytm bcrypt)],
+  [`first_name`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Imię klienta],
+  [`last_name`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Nazwisko klienta],
+  [`phone`], [`VARCHAR(30)`], [`NULL`, `CHECK` (dozwolone znaki, 7–15 cyfr)], [Numer telefonu kontaktowego dla kuriera],
+  [`created_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`], [Data i czas rejestracji konta],
+)
+
+#slownik-tabela(
+  "addresses",
+  [Książka adresowa użytkowników. Przechowuje adresy dostaw (np. dom, lokal gastronomiczny) oraz dane adresowe wykorzystywane do wystawiania faktur (adresy rozliczeniowe).],
+  [`address_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator adresu],
+  [`user_id`], [`BIGINT UNSIGNED`], [`FK (users.user_id)`, `NOT NULL`], [Użytkownik, do którego należy dany adres],
+  [`recipient_name`], [`VARCHAR(150)`], [`NOT NULL`, `CHECK` (niepuste)], [Imię i nazwisko odbiorcy lub nazwa firmy/restauracji],
+  [`street_line1`], [`VARCHAR(255)`], [`NOT NULL`, `CHECK` (niepuste)], [Ulica wraz z numerem budynku i lokalu],
+  [`street_line2`], [`VARCHAR(255)`], [`NULL`, `CHECK` (NULL lub niepuste)], [Dodatkowe wskazówki adresowe (np. piętro, klatka)],
+  [`city`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Miejscowość],
+  [`state_province`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Województwo lub region administracyjny],
+  [`postal_code`], [`VARCHAR(20)`], [`NOT NULL`, `CHECK` (format `NN-NNN`)], [Kod pocztowy],
+  [`created_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`], [Data dodania adresu do książki adresowej],
+)
