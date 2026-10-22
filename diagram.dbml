@@ -1,0 +1,34 @@
+Project kuchenny_sklep {
+  database_type: 'MariaDB'
+  Note: 'Opisanie bazy danych sklepu internetowego zajmującego się sprzedażą sprzętu do kuchni'
+}
+
+Table users {
+  user_id "BIGINT UNSIGNED" [pk, increment, not null]
+  email varchar(255) [not null, unique]
+  password_hash varchar(255) [not null]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  phone varchar(30) [null]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Przechowuje dane kont zarejestrowanych klientów sklepu (zarówno klientów indywidualnych, jak i przedstawicieli restauracji). Stanowi główną encję uwierzytelniania oraz właściciela zamówień i książki adresowej.'
+}
+
+Table addresses {
+  address_id "BIGINT UNSIGNED" [pk, increment, not null]
+  user_id "BIGINT UNSIGNED" [not null]
+  recipient_name varchar(150) [not null]
+  street_line1 varchar(255) [not null]
+  street_line2 varchar(255) [null]
+  city varchar(100) [not null]
+  state_province varchar(100) [not null]
+  postal_code varchar(20) [not null]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  indexes {
+    (user_id, address_id) [unique, name: 'uq_addresses_user_address']
+  }
+
+  Note: 'Książka adresowa użytkowników. Przechowuje adresy dostaw (np. dom, lokal gastronomiczny) oraz dane adresowe wykorzystywane do wystawiania faktur (adresy rozliczeniowe).'
+}
