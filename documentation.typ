@@ -106,3 +106,32 @@ W projekcie występują następujące relacje między encjami:
   [`postal_code`], [`VARCHAR(20)`], [`NOT NULL`, `CHECK` (format `NN-NNN`)], [Kod pocztowy],
   [`created_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`], [Data dodania adresu do książki adresowej],
 )
+
+#pagebreak()
+
+#slownik-tabela(
+  "categories",
+  [Słownik kategorii asortymentu kuchennego obsługujący strukturę drzewiastą (hierarchiczną) dzięki relacji zwrotnej `parent_id`. Pozwala dzielić główne działy (np. _Noże kuchenne_) na węższe podkategorie (np. _Noże Santoku_).],
+  [`category_id`], [`INT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator kategorii],
+  [`parent_id`], [`INT UNSIGNED`], [`FK (categories.category_id)`, `NULL`], [Wskazanie na kategorię nadrzędną (`NULL` dla głównych)],
+  [`name`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Nazwa kategorii wyświetlana w menu sklepu],
+)
+
+#slownik-tabela(
+  "products",
+  [Główny katalog produktów oferowanych przez sklep (noże szefa kuchni, zastawa porcelanowa, patelnie żeliwne, garnki i akcesoria). Przechowuje parametry fizyczne towaru oraz jego bieżącą cenę katalogową.],
+  [`product_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator artykułu kuchennego],
+  [`sku`], [`VARCHAR(64)`], [`NOT NULL`, `UNIQUE`, `CHECK` (litery, cyfry, `_`, `-`)], [Unikalny kod magazynowy produktu (Stock Keeping Unit)],
+  [`name`], [`VARCHAR(200)`], [`NOT NULL`, `CHECK` (niepuste)], [Pełna nazwa handlowa produktu],
+  [`brand`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Marka / producent (np. _Zwilling_, _Gerlach_, _Le Creuset_)],
+  [`description`], [`TEXT`], [`NULL`, `CHECK` (NULL lub niepuste)], [Szczegółowy opis zastosowania i parametrów technicznych],
+  [`base_price`], [`DECIMAL(10,2)`], [`NOT NULL`, `CHECK (base_price > 0)`], [Aktualna cena katalogowa brutto (w PLN)],
+  [`created_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`], [Data wprowadzenia produktu do oferty],
+)
+
+#slownik-tabela(
+  "product_categories",
+  [Tabela asocjacyjna (łącząca) realizująca relację wiele-do-wielu (N:M) pomiędzy produktami a kategoriami. Umożliwia przypisanie jednego artykułu kuchennego do kilku kategorii jednocześnie.],
+  [`product_id`], [`BIGINT UNSIGNED`], [`PK`, `FK (products.product_id)`, `ON DELETE CASCADE`], [Identyfikator przypisywanego produktu],
+  [`category_id`], [`INT UNSIGNED`], [`PK`, `FK (categories.category_id)`, `ON DELETE CASCADE`], [Identyfikator kategorii, do której należy produkt],
+)
