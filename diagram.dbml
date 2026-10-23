@@ -32,3 +32,34 @@ Table addresses {
 
   Note: 'Książka adresowa użytkowników. Przechowuje adresy dostaw (np. dom, lokal gastronomiczny) oraz dane adresowe wykorzystywane do wystawiania faktur (adresy rozliczeniowe).'
 }
+
+Table categories {
+  category_id "INT UNSIGNED" [pk, increment, not null]
+  parent_id "INT UNSIGNED" [null]
+  name varchar(100) [not null]
+
+  Note: 'Słownik kategorii asortymentu kuchennego obsługujący strukturę drzewiastą (hierarchiczną) dzięki relacji zwrotnej `parent_id`. Pozwala dzielić główne działy (np. _Noże kuchenne_) na węższe podkategorie (np. _Noże Santoku_).'
+}
+
+Table products {
+  product_id "BIGINT UNSIGNED" [pk, increment, not null]
+  sku varchar(64) [not null, unique]
+  name varchar(200) [not null]
+  brand varchar(100) [not null]
+  description text [null]
+  base_price decimal(10,2) [not null]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Główny katalog produktów oferowanych przez sklep (noże szefa kuchni, zastawa porcelanowa, patelnie żeliwne, garnki i akcesoria). Przechowuje parametry fizyczne towaru oraz jego bieżącą cenę katalogową.'
+}
+
+Table product_categories {
+  product_id "BIGINT UNSIGNED" [not null]
+  category_id "INT UNSIGNED" [not null]
+
+  indexes {
+    (product_id, category_id) [pk]
+  }
+
+  Note: 'Tabela asocjacyjna (łącząca) realizująca relację wiele-do-wielu (N:M) pomiędzy produktami a kategoriami. Umożliwia przypisanie jednego artykułu kuchennego do kilku kategorii jednocześnie.'
+}
