@@ -135,3 +135,37 @@ W projekcie występują następujące relacje między encjami:
   [`product_id`], [`BIGINT UNSIGNED`], [`PK`, `FK (products.product_id)`, `ON DELETE CASCADE`], [Identyfikator przypisywanego produktu],
   [`category_id`], [`INT UNSIGNED`], [`PK`, `FK (categories.category_id)`, `ON DELETE CASCADE`], [Identyfikator kategorii, do której należy produkt],
 )
+
+#pagebreak()
+
+#slownik-tabela(
+  "inventory",
+  [Przechowuje aktualny stan magazynowy każdego produktu. Każdy produkt ma dokładnie jeden rekord stanu (`PRIMARY KEY` to `product_id`). Zapobiega sprzedaży towaru poniżej zera dzięki ograniczeniu `CHECK (quantity >= 0)`.],
+  [`product_id`], [`BIGINT UNSIGNED`], [`PK`, `FK (products.product_id)`, `NOT NULL`, `ON DELETE RESTRICT`], [Identyfikator składowanego produktu],
+  [`quantity`], [`INT`], [`NOT NULL`, `DEFAULT 0`, `CHECK (>= 0)`], [Liczba dostępnych sztuk produktu],
+  [`updated_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`, `ON UPDATE CURRENT_TIMESTAMP`], [Czas ostatniej zmiany stanu magazynowego],
+)
+
+#slownik-tabela(
+  "orders",
+  [Tabela nagłówków zamówień składanych przez klientów. Łączy kupującego z wybranym adresem dostawy i adresem rozliczeniowym oraz przechowuje aktualny status realizacji i łączną wartość koszyka.],
+  [`order_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny numer zamówienia],
+  [`user_id`], [`BIGINT UNSIGNED`], [`FK (users.user_id)`, `NOT NULL`], [Klient składający zamówienie],
+  [`shipping_address_id`], [`BIGINT UNSIGNED`], [`FK (user_id, shipping_address_id) → addresses (user_id, address_id)`, `NOT NULL`], [Adres fizycznej dostawy zamówienia (musi należeć do kupującego)],
+  [`billing_address_id`], [`BIGINT UNSIGNED`], [`FK (user_id, billing_address_id) → addresses (user_id, address_id)`, `NOT NULL`], [Adres rozliczeniowy (do faktury, musi należeć do kupującego)],
+  [`order_status`], [`ENUM(...)`], [`NOT NULL`, `DEFAULT 'pending'`, `CHECK` (dozwolone wartości)], [Status zamówienia (`pending`, `paid`, `processing`, `shipped`, `delivered`, `cancelled`)],
+  [`total_amount`], [`DECIMAL(10,2)`], [`NOT NULL`, `DEFAULT 0.00`, `CHECK (>= 0)`], [Łączna wartość brutto wszystkich pozycji zamówienia],
+  [`created_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`], [Data i czas złożenia zamówienia],
+)
+
+#pagebreak()
+
+#slownik-tabela(
+  "order_items",
+  [Szczegółowy wykaz pozycji wchodzących w skład zamówienia. Rejestruje zamawianą ilość oraz historyczną cenę jednostkową obowiązującą w momencie zakupu.],
+  [`order_item_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator pozycji zamówienia],
+  [`order_id`], [`BIGINT UNSIGNED`], [`FK (orders.order_id)`, `NOT NULL`, `ON DELETE CASCADE`, `UNIQUE (order_id, product_id)`], [Odwołanie do nadrzędnego zamówienia],
+  [`product_id`], [`BIGINT UNSIGNED`], [`FK (products.product_id)`, `NOT NULL`, `ON DELETE RESTRICT`], [Zamówiony produkt kuchenny],
+  [`quantity`], [`INT UNSIGNED`], [`NOT NULL`, `CHECK (quantity > 0)`], [Liczba zamówionych sztuk danego artykułu],
+  [`unit_price`], [`DECIMAL(10,2)`], [`NOT NULL`, `CHECK (unit_price > 0)`], [Cena jednostkowa brutto produktu w chwili zakupu],
+)
