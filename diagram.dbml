@@ -3,6 +3,15 @@ Project kuchenny_sklep {
   Note: 'Opisanie bazy danych sklepu internetowego zajmującego się sprzedażą sprzętu do kuchni'
 }
 
+enum order_status_enum {
+  pending
+  paid
+  processing
+  shipped
+  delivered
+  cancelled
+}
+
 Table users {
   user_id "BIGINT UNSIGNED" [pk, increment, not null]
   email varchar(255) [not null, unique]
@@ -62,4 +71,38 @@ Table product_categories {
   }
 
   Note: 'Tabela asocjacyjna (łącząca) realizująca relację wiele-do-wielu (N:M) pomiędzy produktami a kategoriami. Umożliwia przypisanie jednego artykułu kuchennego do kilku kategorii jednocześnie.'
+}
+
+Table inventory {
+  product_id "BIGINT UNSIGNED" [pk, not null]
+  quantity int [not null, default: 0]
+  updated_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Przechowuje aktualny stan magazynowy każdego produktu. Każdy produkt ma dokładnie jeden rekord stanu (`PRIMARY KEY` to `product_id`). Zapobiega sprzedaży towaru poniżej zera dzięki ograniczeniu `CHECK (quantity >= 0)`.'
+}
+
+Table orders {
+  order_id "BIGINT UNSIGNED" [pk, increment, not null]
+  user_id "BIGINT UNSIGNED" [not null]
+  shipping_address_id "BIGINT UNSIGNED" [not null]
+  billing_address_id "BIGINT UNSIGNED" [not null]
+  order_status order_status_enum [not null, default: 'pending']
+  total_amount decimal(10,2) [not null, default: 0.00]
+  created_at timestamp [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Tabela nagłówków zamówień składanych przez klientów. Łączy kupującego z wybranym adresem dostawy i adresem rozliczeniowym oraz przechowuje aktualny status realizacji i łączną wartość koszyka.'
+}
+
+Table order_items {
+  order_item_id "BIGINT UNSIGNED" [pk, increment, not null]
+  order_id "BIGINT UNSIGNED" [not null]
+  product_id "BIGINT UNSIGNED" [not null]
+  quantity "INT UNSIGNED" [not null]
+  unit_price decimal(10,2) [not null]
+
+  indexes {
+    (order_id, product_id) [unique, name: 'uq_order_product']
+  }
+
+  Note: 'Szczegółowy wykaz pozycji wchodzących w skład zamówienia. Rejestruje zamawianą ilość oraz historyczną cenę jednostkową obowiązującą w momencie zakupu.'
 }
