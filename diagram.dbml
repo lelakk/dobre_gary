@@ -12,6 +12,28 @@ enum order_status_enum {
   cancelled
 }
 
+enum payment_method_enum {
+  credit_card
+  paypal
+  bank_transfer
+  stripe
+  blik
+}
+
+enum payment_status_enum {
+  initiated
+  completed
+  failed
+  refunded
+}
+
+enum shipment_status_enum {
+  label_created
+  in_transit
+  out_for_delivery
+  delivered
+}
+
 Table users {
   user_id "BIGINT UNSIGNED" [pk, increment, not null]
   email varchar(255) [not null, unique]
@@ -105,4 +127,40 @@ Table order_items {
   }
 
   Note: 'Szczegółowy wykaz pozycji wchodzących w skład zamówienia. Rejestruje zamawianą ilość oraz historyczną cenę jednostkową obowiązującą w momencie zakupu.'
+}
+
+Table payments {
+  payment_id "BIGINT UNSIGNED" [pk, increment, not null]
+  order_id "BIGINT UNSIGNED" [not null]
+  payment_method payment_method_enum [not null]
+  transaction_reference varchar(255) [not null, unique]
+  amount decimal(10,2) [not null]
+  payment_status payment_status_enum [not null, default: 'initiated']
+  paid_at timestamp [null]
+
+  Note: 'Rejestr transakcji płatniczych powiązanych z zamówieniami. Pozwala śledzić wybraną metodę płatności, zewnętrzne numery referencyjne bramek płatniczych, nieudane próby oraz zwroty.'
+}
+
+Table shipments {
+  shipment_id "BIGINT UNSIGNED" [pk, increment, not null]
+  order_id "BIGINT UNSIGNED" [not null]
+  carrier varchar(100) [not null]
+  tracking_number varchar(150) [null, unique]
+  shipment_status shipment_status_enum [not null, default: 'label_created']
+  shipped_at timestamp [null]
+  delivered_at timestamp [null]
+
+  Note: 'Ewidencja przesyłek kurierskich i paczkomatowych realizujących dostawę zamówienia. Jedno zamówienie może być podzielone na wiele przesyłek (np. przy wysyłce w osobnych paczkach).'
+}
+
+Table v_product_stock_summary {
+  product_id "BIGINT UNSIGNED"
+  sku varchar(64)
+  product_name varchar(200)
+  brand varchar(100)
+  base_price decimal(10,2)
+  total_stock int
+  total_price decimal(10,2)
+
+  Note: 'Widok raportowy łączący produkty z ich aktualnym stanem magazynowym. Dzięki zastosowaniu `LEFT JOIN` produkty bez rekordu w tabeli `inventory` również pojawiają się w wyniku (z `total_stock` równym 0).'
 }
