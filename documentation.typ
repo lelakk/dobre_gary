@@ -169,3 +169,48 @@ W projekcie występują następujące relacje między encjami:
   [`quantity`], [`INT UNSIGNED`], [`NOT NULL`, `CHECK (quantity > 0)`], [Liczba zamówionych sztuk danego artykułu],
   [`unit_price`], [`DECIMAL(10,2)`], [`NOT NULL`, `CHECK (unit_price > 0)`], [Cena jednostkowa brutto produktu w chwili zakupu],
 )
+
+#slownik-tabela(
+  "payments",
+  [Rejestr transakcji płatniczych powiązanych z zamówieniami. Pozwala śledzić wybraną metodę płatności, zewnętrzne numery referencyjne bramek płatniczych, nieudane próby oraz zwroty.],
+  [`payment_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator operacji płatniczej],
+  [`order_id`], [`BIGINT UNSIGNED`], [`FK (orders.order_id)`, `NOT NULL`], [Identyfikator opłacanego zamówienia],
+  [`payment_method`], [`ENUM(...)`], [`NOT NULL`, `CHECK` (dozwolone wartości)], [Kanał płatności (`credit_card`, `paypal`, `bank_transfer`, `stripe`, `blik`)],
+  [`transaction_reference`], [`VARCHAR(255)`], [`NOT NULL`, `UNIQUE`, `CHECK` (niepuste)], [Unikalny identyfikator transakcji z zewnętrznego systemu płatności],
+  [`amount`], [`DECIMAL(10,2)`], [`NOT NULL`, `CHECK (amount > 0)`], [Kwota płatności w PLN],
+  [`payment_status`], [`ENUM(...)`], [`NOT NULL`, `DEFAULT 'initiated'`, `CHECK` (dozwolone wartości)], [Status transakcji (`initiated`, `completed`, `failed`, `refunded`)],
+  [`paid_at`], [`TIMESTAMP`], [`NULL`, `CHECK` (spójność ze statusem)], [Data i czas potwierdzenia wpłaty (`NOT NULL` dla `completed`/`refunded`, `NULL` dla `initiated`/`failed`)],
+)
+
+#pagebreak()
+
+#slownik-tabela(
+  "shipments",
+  [Ewidencja przesyłek kurierskich i paczkomatowych realizujących dostawę zamówienia. Jedno zamówienie może być podzielone na wiele przesyłek (np. przy wysyłce w osobnych paczkach).],
+  [`shipment_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator przesyłki],
+  [`order_id`], [`BIGINT UNSIGNED`], [`FK (orders.order_id)`, `NOT NULL`], [Identyfikator wysyłanego zamówienia],
+  [`carrier`], [`VARCHAR(100)`], [`NOT NULL`, `CHECK` (niepuste)], [Nazwa przewoźnika (np. _InPost Paczkomaty_, _DPD Polska_, _DHL_)],
+  [`tracking_number`], [`VARCHAR(150)`], [`NULL`, `UNIQUE`, `CHECK` (NULL lub niepuste)], [Unikalny numer listu przewozowego do śledzenia paczki],
+  [`shipment_status`], [`ENUM(...)`], [`NOT NULL`, `DEFAULT 'label_created'`, `CHECK` (dozwolone wartości)], [Status logistyczny (`label_created`, `in_transit`, `out_for_delivery`, `delivered`)],
+  [`shipped_at`], [`TIMESTAMP`], [`NULL`, `CHECK` (spójność ze statusem)], [Data i czas przekazania paczki kurierowi],
+  [`delivered_at`], [`TIMESTAMP`], [`NULL`, `CHECK` (spójność ze statusem i `shipped_at`)], [Data i czas doręczenia przesyłki odbiorcy],
+)
+
+=== Widok #raw("v_product_stock_summary")
+
+Widok raportowy łączący produkty z ich aktualnym stanem magazynowym. Dzięki zastosowaniu `LEFT JOIN` produkty bez rekordu w tabeli `inventory` również pojawiają się w wyniku (z `total_stock` równym 0).
+
+#text(size: 9pt)[
+  #table(
+    columns: (1.4fr, 1.4fr, 2.6fr),
+    align: (left + horizon, left + horizon, left + horizon),
+    table.header([Kolumna], [Typ danych], [Opis]),
+    [`product_id`], [`BIGINT UNSIGNED`], [Identyfikator produktu],
+    [`sku`], [`VARCHAR(64)`], [Kod magazynowy produktu],
+    [`product_name`], [`VARCHAR(200)`], [Nazwa produktu],
+    [`brand`], [`VARCHAR(100)`], [Marka / producent],
+    [`base_price`], [`DECIMAL(10,2)`], [Cena katalogowa produktu],
+    [`total_stock`], [`INT`], [Łączny stan magazynowy (`0`, jeśli brak rekordu w `inventory`)],
+    [`total_price`], [`DECIMAL(10,2)`], [Wartość stanu magazynowego (`base_price * total_stock`)],
+  )
+]
