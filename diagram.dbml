@@ -164,3 +164,17 @@ Table v_product_stock_summary {
 
   Note: 'Widok raportowy łączący produkty z ich aktualnym stanem magazynowym. Dzięki zastosowaniu `LEFT JOIN` produkty bez rekordu w tabeli `inventory` również pojawiają się w wyniku (z `total_stock` równym 0).'
 }
+
+// Connections between tables
+Ref fk_addresses_user: addresses.user_id > users.user_id [delete: cascade]
+Ref fk_categories_parent: categories.parent_id > categories.category_id [delete: set null]
+Ref fk_pc_product: product_categories.product_id > products.product_id [delete: cascade]
+Ref fk_pc_category: product_categories.category_id > categories.category_id [delete: cascade]
+Ref fk_inv_product: products.product_id - inventory.product_id [delete: restrict]
+Ref fk_orders_user: orders.user_id > users.user_id [delete: restrict]
+Ref fk_orders_shipping_addr: orders.(user_id, shipping_address_id) > addresses.(user_id, address_id) [delete: restrict]
+Ref fk_orders_billing_addr: orders.(user_id, billing_address_id) > addresses.(user_id, address_id) [delete: restrict]
+Ref fk_items_order: order_items.order_id > orders.order_id [delete: cascade]
+Ref fk_items_product: order_items.product_id > products.product_id [delete: restrict]
+Ref fk_payments_order: payments.order_id > orders.order_id [delete: restrict]
+Ref fk_shipments_order: shipments.order_id > orders.order_id [delete: cascade]
