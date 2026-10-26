@@ -81,6 +81,8 @@ W projekcie występują następujące relacje między encjami:
   ]
 ]
 
+Szczegółowe zestawienie wszystkich 10 tabel tworzących schemat bazy danych sklepu internetowego z wyposażeniem kuchennym wraz z opisem ich przeznaczenia, typami danych oraz więzami integralności.
+
 #slownik-tabela(
   "users",
   [Przechowuje dane kont zarejestrowanych klientów sklepu (zarówno klientów indywidualnych, jak i przedstawicieli restauracji). Stanowi główną encję uwierzytelniania oraz właściciela zamówień i książki adresowej.],
@@ -214,3 +216,23 @@ Widok raportowy łączący produkty z ich aktualnym stanem magazynowym. Dzięki 
     [`total_price`], [`DECIMAL(10,2)`], [Wartość stanu magazynowego (`base_price * total_stock`)],
   )
 ]
+
+#pagebreak()
+
+= Uzasadnienie normalizacji
+
+Zaprojektowany schemat bazy danych spełnia wymogi co najmniej *trzeciej postaci normalnej (3NF)*:
+
++ *Pierwsza Postać Normalna (1NF):*
+  - Wszystkie atrybuty w tabelach są *atomowe* (niepodzielne) - np. dane osobowe zostały rozbite na `first_name` i `last_name`, a dane adresowe na `street_line1`, `street_line2`, `city`, `state_province` oraz `postal_code`.
+  - Brak powtarzających się grup kolumn (np. zamiast kolumn `category_1`, `category_2` w tabeli `products`, wydzielono tabelę łączącą `product_categories`).
+  - Każda tabela posiada zdefiniowany klucz główny (`PRIMARY KEY`).
+
++ *Druga Postać Normalna (2NF):*
+  - Spełnione są warunki 1NF, a każdy atrybut niebędący częścią klucza zależy *w pełni funkcjonalnie* od całego klucza głównego.
+  - W tabeli `product_categories` ze złożonym kluczem głównym `(product_id, category_id)` nie występują atrybuty niekluczowe, więc nie ma możliwości częściowej zależności. W pozostałych tabelach klucz główny jest pojedynczą kolumną, a wszystkie atrybuty niekluczowe zależą od niego w całości.
+
++ *Trzecia Postać Normalna (3NF):*
+  - Spełnione są warunki 2NF oraz *nie występują zależności przechodnie* (atrybuty niekluczowe zależą wyłącznie od klucza głównego, a nie od innych atrybutów niekluczowych).
+  - Adresy dostawy i adresy rozliczeniowe zostały wydzielone do osobnej tabeli `addresses`, dzięki czemu zmiana adresu użytkownika lub przypisanie go do zamówienia nie powoduje duplikowania danych adresowych w tabeli `orders`.
+  - *Uwaga projektowa dotycząca cen historycznych:* Kolumna `unit_price` w tabeli `order_items` przechowuje cenę produktu *w momencie zakupu* (np. z uwzględnieniem ówczesnego cennika lub promocji), natomiast `base_price` w tabeli `products` to bieżąca cena katalogowa. Dzięki temu późniejsza zmiana ceny noża czy garnka w katalogu nie fałszuje historycznych faktur i zamówień.
