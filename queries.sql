@@ -152,3 +152,138 @@ LEFT JOIN `product_categories` pc ON child.category_id = pc.category_id
 LEFT JOIN `products` pr ON pc.product_id = pr.product_id
 GROUP BY parent.name, child.category_id, child.name
 ORDER BY parent_category, child.name;
+
+
+-- ============================================================================
+-- CZĘŚĆ B: WYZWALACZE (TRIGGERS)
+-- ============================================================================
+
+DELIMITER $$
+
+-- Trigger 1: Przed dodaniem pozycji zamówienia sprawdza dostępność w magazynie
+-- oraz automatycznie pobiera aktualną cenę katalogową produktu, jeśli podano 0
+CREATE TRIGGER `trg_before_order_item_insert`
+BEFORE INSERT ON `order_items`
+FOR EACH ROW
+BEGIN
+    DECLARE v_available_qty INT DEFAULT 0;
+    DECLARE v_catalog_price DECIMAL(10, 2);
+
+    IF NEW.quantity IS NULL OR NEW.quantity = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: Ilość musi być dodatnia.';
+    END IF;
+
+    -- Sprawdzenie i zablokowanie stanu produktu na czas transakcji
+    SELECT `quantity` INTO v_available_qty
+    FROM `inventory`
+    WHERE `product_id` = NEW.product_id
+    FOR UPDATE;
+
+    IF v_available_qty IS NULL OR v_available_qty < NEW.quantity THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Błąd: Niewystarczająca ilość dostępnego produktu!';
+    END IF;
+
+    -- Jeśli cena jednostkowa = 0, ustaw cenę katalogową z tabeli products
+    IF NEW.unit_price = 0 THEN
+        SELECT `base_price` INTO v_catalog_price
+        FROM `products`
+        WHERE `product_id` = NEW.product_id;
+        SET NEW.unit_price = v_catalog_price;
+    END IF;
+END$$
+
+-- Trigger 2: Po dodaniu pozycji zamówienia automatycznie zmniejsza stan magazynowy
+-- oraz aktualizuje łączną kwotę zamówienia (total_amount) w tabeli orders
+CREATE TRIGGER `trg_after_order_item_insert`
+AFTER INSERT ON `order_items`
+FOR EACH ROW
+BEGIN
+    -- Pomniejszenie stanu magazynowego
+    UPDATE `inventory`
+    SET `quantity` = `quantity` - NEW.quantity
+    WHERE `product_id` = NEW.product_id;
+
+    -- Przeliczenie wartości zamówienia
+    UPDATE `orders`
+    SET `total_amount` = (
+        SELECT COALESCE(SUM(`quantity` * `unit_price`), 0.00)
+        FROM `order_items`
+        WHERE `order_id` = NEW.order_id
+    )
+    WHERE `order_id` = NEW.order_id;
+END$$
+
+DELIMITER ;
+
+-- ============================================================================
+-- CZĘŚĆ C: PROCEDURA SKŁADOWANA (STORED PROCEDURE)
+-- ============================================================================
+
+DELIMITER $$
+
+-- Procedura składania nowego zamówienia na artykuł kuchenny wraz z obsługą transakcyjną
+CREATE PROCEDURE `sp_place_single_product_order`(
+    IN p_user_id BIGINT UNSIGNED,
+    IN p_shipping_address_id BIGINT UNSIGNED,
+    IN p_billing_address_id BIGINT UNSIGNED,
+    IN p_product_id BIGINT UNSIGNED,
+    IN p_quantity INT UNSIGNED,
+    IN p_payment_method ENUM('credit_card', 'paypal', 'bank_transfer', 'stripe', 'blik'),
+    OUT p_new_order_id BIGINT UNSIGNED
+)
+BEGIN
+    DECLARE v_unit_price DECIMAL(10, 2);
+    DECLARE v_total DECIMAL(10, 2);
+
+    -- Obsługa błędów SQL: wycofanie transakcji w razie jakiegokolwiek wyjątku
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+
+    SET p_new_order_id = NULL;
+    IF p_quantity IS NULL OR p_quantity = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Błąd: Ilość musi być dodatnia.';
+    END IF;
+
+    -- Pobranie ceny produktu
+    SELECT `base_price` INTO v_unit_price
+    FROM `products`
+    WHERE `product_id` = p_product_id
+     FOR UPDATE;
+
+    IF v_unit_price IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Błąd: Produkt nie istnieje.';
+    END IF;
+
+    SET v_total = v_unit_price * p_quantity;
+
+    -- 1. Utworzenie nagłówka zamówienia
+    INSERT INTO `orders` (`user_id`, `shipping_address_id`, `billing_address_id`, `order_status`, `total_amount`)
+    VALUES (p_user_id, p_shipping_address_id, p_billing_address_id, 'pending', 0.00);
+
+    SET p_new_order_id = LAST_INSERT_ID();
+
+    -- 2. Dodanie pozycji zamówienia (uruchamia triggery sprawdzające i zmniejszające stan magazynowy)
+    INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`, `unit_price`)
+    VALUES (p_new_order_id, p_product_id, p_quantity, v_unit_price);
+
+    -- 3. Inicjacja płatności
+    INSERT INTO `payments` (`order_id`, `payment_method`, `transaction_reference`, `amount`, `payment_status`)
+    VALUES (
+        p_new_order_id,
+        p_payment_method,
+        CONCAT('TXN-AUTO-', p_new_order_id, '-', UNIX_TIMESTAMP()),
+        v_total,
+        'initiated'
+    );
+
+    COMMIT;
+END$$
+
+DELIMITER ;
