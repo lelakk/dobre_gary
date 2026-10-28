@@ -287,3 +287,43 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+-- ============================================================================
+-- CZĘŚĆ D: DEMONSTRACJA TRANSAKCJI (COMMIT ORAZ ROLLBACK)
+-- ============================================================================
+
+-- Scenariusz 1: Pomyślne wywołanie procedury (zatwierdzone przez COMMIT wewnątrz procedury)
+CALL `sp_place_single_product_order`(4, 4, 4, 1, 2, 'blik', @utworzone_zamowienie);
+SELECT @utworzone_zamowienie AS nowe_id_zamowienia;
+
+-- Scenariusz 2: Jawna transakcja zakończona ROLLBACK (np. anulowanie zamówienia i wycofanie operacji)
+START TRANSACTION;
+
+    -- Aktualizacja statusu płatności i zamówienia
+    UPDATE `payments`
+    SET `payment_status` = 'completed', `paid_at` = NOW()
+    WHERE `order_id` = 5;
+
+    UPDATE `orders`
+    SET `order_status` = 'paid'
+    WHERE `order_id` = 5;
+
+    -- Symulacja wykrycia błędu weryfikacji płatności -> wycofujemy wszystkie zmiany
+ROLLBACK;
+
+-- Scenariusz 3: Jawna transakcja zakończona COMMIT (zaksięgowanie wpłaty i utworzenie listu przewozowego)
+START TRANSACTION;
+
+    UPDATE `payments`
+    SET `payment_status` = 'completed', `paid_at` = NOW()
+    WHERE `order_id` = 5;
+
+    UPDATE `orders`
+    SET `order_status` = 'paid'
+    WHERE `order_id` = 5;
+
+    INSERT INTO `shipments` (`order_id`, `carrier`, `tracking_number`, `shipment_status`)
+    VALUES (5, 'InPost Paczkomaty', 'INP-20261014-5555', 'label_created');
+
+COMMIT;
