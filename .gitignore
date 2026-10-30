@@ -4,10 +4,12 @@
 *.env
 *.local
 config.local.*
+src/main/resources/application.properties
 
 # Maven / Java
 target/
 build/
+out/
 *.class
 *.jar
 *.war

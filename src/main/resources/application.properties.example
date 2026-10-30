@@ -1,0 +1,12 @@
+# copy it as application.properties and set the settings like password etc
+server.port=8080
+
+spring.datasource.url=jdbc:mariadb://localhost:3306/projekt
+spring.datasource.username=root
+spring.datasource.password=
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+
+# db schema is created from sql scripts like schema.sql or queries.sql, so hibernate shouldnt create/modify tables
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
