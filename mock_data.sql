@@ -157,21 +157,21 @@ INSERT INTO `inventory` (`product_id`, `quantity`) VALUES
 (46, 25), (47, 18), (48, 12), (49, 7), (50, 6);
 
 -- 7 ZAMÓWIENIA
-INSERT INTO `orders` (`order_id`, `user_id`, `shipping_address_id`, `billing_address_id`, `order_status`, `total_amount`) VALUES
-(1, 1, 1, 1, 'delivered', 399.99),
-(2, 2, 2, 2, 'shipped', 260.00),
-(3, 3, 3, 3, 'processing', 350.00),
-(4, 4, 4, 4, 'paid', 59.99),
-(5, 5, 5, 5, 'pending', 1448.00),
-(6, 6, 6, 6, 'cancelled', 199.00),
-(7, 7, 7, 7, 'delivered', 55.00),
-(8, 8, 8, 8, 'shipped', 125.00),
-(9, 9, 9, 9, 'processing', 450.00),
-(10, 10, 10, 10, 'delivered', 89.00);
+INSERT INTO `orders` (`order_id`, `user_id`, `shipping_address_id`, `billing_address_id`, `order_status`, `total_amount`, `created_at`) VALUES
+(1, 1, 1, 1, 'delivered', 799.98, '2026-05-10 10:00:00'),
+(2, 2, 2, 2, 'shipped', 260.00, '2026-06-15 11:00:00'),
+(3, 3, 3, 3, 'processing', 350.00, '2026-07-20 12:00:00'),
+(4, 4, 4, 4, 'paid', 59.99, '2026-08-25 13:00:00'),
+(5, 5, 5, 5, 'pending', 1448.00, '2026-09-10 14:00:00'),
+(6, 6, 6, 6, 'cancelled', 199.00, '2026-09-15 15:00:00'),
+(7, 7, 7, 7, 'delivered', 55.00, '2026-10-01 16:00:00'),
+(8, 8, 8, 8, 'shipped', 125.00, '2026-10-05 17:00:00'),
+(9, 9, 9, 9, 'processing', 450.00, '2026-10-08 18:00:00'),
+(10, 10, 10, 10, 'delivered', 89.00, '2026-10-09 19:00:00');
 
 -- 8 POZYCJE ZAMÓWIENIA
 INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`, `unit_price`) VALUES
-(1, 1, 1, 399.99),
+(1, 1, 2, 399.99),
 (2, 6, 1, 120.00),
 (2, 7, 1, 140.00),
 (3, 16, 1, 350.00),
@@ -186,23 +186,24 @@ INSERT INTO `order_items` (`order_id`, `product_id`, `quantity`, `unit_price`) V
 
 -- 9 PŁATNOŚCI
 INSERT INTO `payments` (`payment_id`, `order_id`, `payment_method`, `transaction_reference`, `amount`, `payment_status`, `paid_at`) VALUES
-(1, 1, 'blik', 'TRX-10001', 399.99, 'completed', '2023-10-01 10:05:00'),
-(2, 2, 'credit_card', 'TRX-10002', 260.00, 'completed', '2023-10-02 11:15:00'),
-(3, 3, 'paypal', 'TRX-10003', 350.00, 'completed', '2023-10-03 12:30:00'),
-(4, 4, 'stripe', 'TRX-10004', 59.99, 'completed', '2023-10-04 14:00:00'),
+(1, 1, 'blik', 'TRX-10001', 799.98, 'completed', '2026-05-10 10:05:00'),
+(2, 2, 'credit_card', 'TRX-10002', 260.00, 'completed', '2026-06-15 11:15:00'),
+(3, 3, 'paypal', 'TRX-10003', 350.00, 'completed', '2026-07-20 12:30:00'),
+(4, 4, 'stripe', 'TRX-10004', 59.99, 'completed', '2026-08-25 14:00:00'),
 (5, 5, 'bank_transfer', 'TRX-10005', 1448.00, 'initiated', NULL),
-(6, 6, 'blik', 'TRX-10006', 199.00, 'refunded', '2023-10-05 09:00:00'),
-(7, 7, 'credit_card', 'TRX-10007', 55.00, 'completed', '2023-10-06 16:45:00'),
-(8, 8, 'paypal', 'TRX-10008', 125.00, 'completed', '2023-10-07 18:20:00'),
-(9, 9, 'stripe', 'TRX-10009', 450.00, 'completed', '2023-10-08 20:10:00'),
-(10, 10, 'blik', 'TRX-10010', 89.00, 'completed', '2023-10-09 21:05:00');
+(6, 6, 'blik', 'TRX-10006', 199.00, 'refunded', '2026-09-15 15:30:00'),
+(7, 7, 'credit_card', 'TRX-10007', 55.00, 'completed', '2026-10-01 16:45:00'),
+(8, 8, 'paypal', 'TRX-10008', 125.00, 'completed', '2026-10-05 18:20:00'),
+(9, 9, 'stripe', 'TRX-10009', 450.00, 'completed', '2026-10-08 20:10:00'),
+(10, 10, 'blik', 'TRX-10010', 89.00, 'completed', '2026-10-09 21:05:00');
 
 -- 10 PRZESYŁKI
 INSERT INTO `shipments` (`shipment_id`, `order_id`, `carrier`, `tracking_number`, `shipment_status`, `shipped_at`, `delivered_at`) VALUES
-(1, 1, 'InPost', 'INP123456789', 'delivered', '2023-10-01 14:00:00', '2023-10-02 10:30:00'),
-(2, 2, 'DPD', 'DPD987654321', 'in_transit', '2023-10-03 09:00:00', NULL),
+(1, 1, 'InPost', 'INP123456789', 'delivered', '2026-05-11 14:00:00', '2026-05-12 10:30:00'),
+(2, 2, 'DPD', 'DPD987654321', 'in_transit', '2026-06-16 09:00:00', NULL),
 (3, 3, 'DHL', 'DHL555666777', 'label_created', NULL, NULL),
 -- 4,5,6 nie maja sposobu wysylki albo anulowane
-(4, 7, 'InPost', 'INP111222333', 'delivered', '2023-10-07 11:00:00', '2023-10-08 14:20:00'),
-(5, 8, 'UPS', 'UPS444555666', 'out_for_delivery', '2023-10-08 08:30:00', NULL),
-(6, 10, 'InPost', 'INP999888777', 'delivered', '2023-10-10 15:00:00', '2023-10-11 12:45:00');
+(4, 7, 'InPost', 'INP111222333', 'delivered', '2026-10-02 11:00:00', '2026-10-03 14:20:00'),
+(5, 8, 'UPS', 'UPS444555666', 'out_for_delivery', '2026-10-06 08:30:00', NULL),
+(6, 10, 'InPost', 'INP999888777', 'delivered', '2026-10-10 15:00:00', '2026-10-11 12:45:00'),
+(7, 2, 'DPD', 'DPD987654322', 'in_transit', '2026-06-16 09:05:00', NULL);
