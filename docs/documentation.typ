@@ -26,11 +26,55 @@
   #text(size: 13pt)[Bazy Danych]\
   #text(size: 11pt, style: "italic")[Projekt]
   #v(2mm)
-  #text(size: 11pt)[*Autorzy:* Gabriela Kłos, Paweł Lelakowski, Gabriel Pilch, Piotr Niepsuj]
+  #text(size: 11pt)[*Kierunek:* Informatyka]\
+  #text(size: 11pt)[*Grupa laboratoryjna:* 4]
+  #v(2mm)
+  #text(size: 11pt)[*Autorzy:* Gabriela Kłos (158178), Paweł Lelakowski (158188), Gabriel Pilch (158211), Piotr Niepsuj (158200)]
   #v(4mm)
 ]
 
 #outline(title: none, indent: auto)
+
+#pagebreak()
+
+= Opis zadania
+
+Baza danych *Kuchenny Sklep Internetowy* została zaprojektowana w celu zarządzania wszystkimi kluczowymi aspektami funkcjonowania sklepu internetowego zajmującego się sprzedażą sprzętu i akcesoriów kuchennych. Obejmuje dane osobowe klientów, książkę adresową, katalog produktów wraz z kategoriami, stany magazynowe, zamówienia, płatności oraz przesyłki.
+
+Baza danych posiada następujące encje: `users`, `addresses`, `categories`, `products`, `product_categories`, `inventory`, `orders`, `order_items`, `payments`, `shipments` oraz widok raportowy `v_product_stock_summary`.
+
+== Kto jest kim? (`users`, `addresses`)
+
+- Każdy klient ma dokładnie jedno konto w tabeli `users`, identyfikowane przez `user_id` i unikalny adres e-mail.
+- Jeden użytkownik może posiadać wiele adresów zapisanych w tabeli `addresses` (relacja 1:N). Każdy adres należy do dokładnie jednego użytkownika.
+- Adresy pełnią rolę zarówno adresów dostawy, jak i rozliczeniowych. Dzięki złożonym kluczom obcym `(user_id, address_id)` zamówienie może wskazywać wyłącznie adresy należące do kupującego.
+- Dane uwierzytelniania są przechowywane w tabeli `users` w postaci adresu e-mail oraz zahaszowanego hasła (`password_hash`).
+
+== Co sprzedajemy? (`products`, `categories`, `inventory`)
+
+- Katalog produktów znajduje się w tabeli `products`; każdy produkt ma unikalny kod `sku`, nazwę, markę i cenę katalogową.
+- Kategorie tworzą strukturę hierarchiczną dzięki relacji zwrotnej `parent_id` w tabeli `categories`.
+- Produkt może należeć do wielu kategorii, a kategoria może zawierać wiele produktów. Relację N:M realizuje tabela asocjacyjna `product_categories`.
+- Każdy produkt ma dokładnie jeden rekord stanu magazynowego w tabeli `inventory` (relacja 1:1). Ilość dostępnych sztuk nie może być ujemna.
+
+== Jak kupują? (`orders`, `order_items`, `payments`, `shipments`)
+
+- Klient może złożyć wiele zamówień. Każde zamówienie w tabeli `orders` jest powiązane z kupującym oraz adresem dostawy i adresem rozliczeniowym.
+- Jedno zamówienie może zawierać wiele pozycji w tabeli `order_items`; każda pozycja wskazuje produkt, liczbę sztuk i cenę jednostkową z chwili zakupu.
+- Zamówienie może mieć wiele prób płatności w tabeli `payments` (np. pierwszą nieudaną i drugą zakończoną sukcesem).
+- Jedno zamówienie może zostać podzielone na wiele przesyłek w tabeli `shipments`, np. gdy produkty są wysyłane w osobnych paczkach.
+
+== Jak to wszystko łączymy?
+
+Najważniejsze relacje można podsumować następująco:
+
+- `users` 1:N `addresses` oraz `users` 1:N `orders`,
+- `orders` 1:N `order_items`, `orders` 1:N `payments` oraz `orders` 1:N `shipments`,
+- `products` 1:1 `inventory`,
+- `products` N:M `categories` przez tabelę `product_categories`,
+- `addresses` 1:N `orders` w dwóch rolach: adresu dostawy i adresu rozliczeniowego.
+
+Dzięki takiemu podziałowi dane osobowe, adresowe, katalogowe i transakcyjne są od siebie oddzielone, a integralność relacji wymuszają klucze obce oraz ograniczenia `CHECK`.
 
 #pagebreak()
 
@@ -52,6 +96,32 @@ W projekcie występują następujące relacje między encjami:
 
 *Relacje N:M (wiele do wielu):*
 - `products` (N) $<->$ (M) `categories` poprzez tabelę asocjacyjną `product_categories` (produkt może należeć do kilku kategorii, a kategoria zawiera wiele produktów).
+
+#pagebreak()
+
+= Diagram bazy danych
+
+#figure(
+  image("images/full-diagram-with-connections-highlighted.png", width: 100%),
+  caption: [Diagram relacji bazy danych sklepu kuchennego z podświetlonymi połączeniami między tabelami.],
+)
+
+#figure(
+  image("images/who-is-who-with-connections-highlighted.png", width: 90%),
+  caption: [Przybliżenie: tabele `users` i `addresses` oraz ich powiązania.],
+)
+
+#pagebreak()
+
+#figure(
+  image("images/what-we-sell-with-connections-highlighted.png", width: 90%),
+  caption: [Przybliżenie: tabele `products`, `categories`, `product_categories` oraz `inventory`.],
+)
+
+#figure(
+  image("images/how-they-buy-with-connections-highlighted.png", width: 90%),
+  caption: [Przybliżenie: tabele `orders`, `order_items`, `payments` oraz `shipments`.],
+)
 
 #pagebreak()
 
