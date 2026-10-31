@@ -48,7 +48,7 @@ W projekcie występują następujące relacje między encjami:
 - `orders` (1) $->$ (N) `shipments` - zamówienie może zostać wysłane w jednej lub kilku paczkach (`ON DELETE CASCADE`).
 
 *Relacje 1:1 (jeden do jednego):*
-- `products` (1) $->$ (1) `inventory` - każdy produkt ma dokładnie jeden rekord stanu magazynowego (`PRIMARY KEY` w `inventory` to `product_id`, `ON DELETE RESTRICT`).
+- `products` (1) $->$ (1) `inventory` - każdy produkt ma dokładnie jeden rekord stanu magazynowego (`PRIMARY KEY` w `inventory` to `product_id`, `ON DELETE CASCADE`).
 
 *Relacje N:M (wiele do wielu):*
 - `products` (N) $<->$ (M) `categories` poprzez tabelę asocjacyjną `product_categories` (produkt może należeć do kilku kategorii, a kategoria zawiera wiele produktów).
@@ -143,7 +143,7 @@ Szczegółowe zestawienie wszystkich 10 tabel tworzących schemat bazy danych sk
 #slownik-tabela(
   "inventory",
   [Przechowuje aktualny stan magazynowy każdego produktu. Każdy produkt ma dokładnie jeden rekord stanu (`PRIMARY KEY` to `product_id`). Zapobiega sprzedaży towaru poniżej zera dzięki ograniczeniu `CHECK (quantity >= 0)`.],
-  [`product_id`], [`BIGINT UNSIGNED`], [`PK`, `FK (products.product_id)`, `NOT NULL`, `ON DELETE RESTRICT`], [Identyfikator składowanego produktu],
+  [`product_id`], [`BIGINT UNSIGNED`], [`PK`, `FK (products.product_id)`, `NOT NULL`, `ON DELETE CASCADE`], [Identyfikator składowanego produktu],
   [`quantity`], [`INT`], [`NOT NULL`, `DEFAULT 0`, `CHECK (>= 0)`], [Liczba dostępnych sztuk produktu],
   [`updated_at`], [`TIMESTAMP`], [`NOT NULL`, `DEFAULT CURRENT_TIMESTAMP`, `ON UPDATE CURRENT_TIMESTAMP`], [Czas ostatniej zmiany stanu magazynowego],
 )
@@ -167,7 +167,7 @@ Szczegółowe zestawienie wszystkich 10 tabel tworzących schemat bazy danych sk
   [Szczegółowy wykaz pozycji wchodzących w skład zamówienia. Rejestruje zamawianą ilość oraz historyczną cenę jednostkową obowiązującą w momencie zakupu.],
   [`order_item_id`], [`BIGINT UNSIGNED`], [`PK`, `AUTO_INCREMENT`, `NOT NULL`], [Unikalny identyfikator pozycji zamówienia],
   [`order_id`], [`BIGINT UNSIGNED`], [`FK (orders.order_id)`, `NOT NULL`, `ON DELETE CASCADE`, `UNIQUE (order_id, product_id)`], [Odwołanie do nadrzędnego zamówienia],
-  [`product_id`], [`BIGINT UNSIGNED`], [`FK (products.product_id)`, `NOT NULL`, `ON DELETE RESTRICT`], [Zamówiony produkt kuchenny],
+  [`product_id`], [`BIGINT UNSIGNED`], [`FK (products.product_id)`, `NOT NULL`, `ON DELETE CASCADE`], [Zamówiony produkt kuchenny],
   [`quantity`], [`INT UNSIGNED`], [`NOT NULL`, `CHECK (quantity > 0)`], [Liczba zamówionych sztuk danego artykułu],
   [`unit_price`], [`DECIMAL(10,2)`], [`NOT NULL`, `CHECK (unit_price > 0)`], [Cena jednostkowa brutto produktu w chwili zakupu],
 )
