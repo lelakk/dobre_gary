@@ -97,7 +97,7 @@ CREATE TABLE `inventory` (
     KEY `idx_inventory_quantity` (`quantity`),
     CONSTRAINT `chk_inventory_quantity` CHECK (`quantity` >= 0),
     CONSTRAINT `fk_inv_product` FOREIGN KEY (`product_id`) 
-        REFERENCES `products` (`product_id`) ON DELETE RESTRICT
+        REFERENCES `products` (`product_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- 7. Tabela zamówień
@@ -141,8 +141,8 @@ CREATE TABLE `order_items` (
     CONSTRAINT `fk_items_order` FOREIGN KEY (`order_id`) 
         REFERENCES `orders` (`order_id`) ON DELETE CASCADE,
     CONSTRAINT `fk_items_product` FOREIGN KEY (`product_id`) 
-        REFERENCES `products` (`product_id`) ON DELETE RESTRICT
-) ENGINE=InnoDB;
+        REFERENCES `products` (`product_id`) ON DELETE CASCADE
+) ENGINE=InnoDB; -- temporary cascade until a better fix is implemented
 
 -- 9. Tabela płatności
 CREATE TABLE `payments` (
