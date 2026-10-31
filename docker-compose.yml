@@ -1,0 +1,17 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: dobre-gary-db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: ${DB_NAME:-projekt}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./mock_data.sql:/docker-entrypoint-initdb.d/02-mock_data.sql:ro
+      - ./queries.sql:/docker-entrypoint-initdb.d/03-queries.sql:ro
+volumes:
+  db_data:
