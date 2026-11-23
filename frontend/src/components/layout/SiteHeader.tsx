@@ -1,6 +1,7 @@
 import { CookingPot } from 'lucide-react'
 import { Link } from 'react-router'
 import { paths } from '@/app/paths'
+import { CartButton } from '@/features/cart/CartButton'
 import { Container } from './Container'
 
 export function SiteHeader() {
@@ -14,6 +15,7 @@ export function SiteHeader() {
           <CookingPot className="size-5" aria-hidden />
           Dobre Gary
         </Link>
+        <CartButton />
       </Container>
     </header>
   )

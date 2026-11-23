@@ -1,9 +1,12 @@
+import { Plus } from 'lucide-react'
 import { Link } from 'react-router'
 import { paths } from '@/app/paths'
 import type { Product } from '@/api/types'
 import { Price } from '@/components/Price'
 import { ProductImage } from '@/components/product/ProductImage'
 import { StockStatus } from '@/components/product/StockStatus'
+import { Button } from '@/components/ui/button'
+import { useAddToCart } from '@/features/cart/use-cart'
 
 export function ProductCard({ product }: { product: Product }) {
   return (
@@ -22,11 +25,30 @@ export function ProductCard({ product }: { product: Product }) {
             {product.name}
           </Link>
         </h3>
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-1">
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
           <Price amount={product.basePrice} className="text-sm font-semibold text-zinc-900" />
-          <StockStatus quantity={product.quantity} />
+          <QuickAddButton product={product} />
         </div>
+        <StockStatus quantity={product.quantity} />
       </div>
     </article>
+  )
+}
+
+function QuickAddButton({ product }: { product: Product }) {
+  const { remainingStock, addToCart } = useAddToCart(product)
+
+  return (
+    <Button
+      variant="outline"
+      size="icon-sm"
+      // Lifted above the card's stretched link so the click adds to cart instead of navigating.
+      className="relative z-10"
+      disabled={remainingStock === 0}
+      onClick={() => addToCart()}
+      aria-label={`Dodaj do koszyka: ${product.name}`}
+    >
+      <Plus />
+    </Button>
   )
 }

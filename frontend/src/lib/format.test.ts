@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatCount, formatPrice } from './format'
+import { formatCount, formatPrice, PRODUCT_FORMS } from './format'
 
 /** Intl uses (narrow) non-breaking spaces; normalize them so expectations stay readable. */
 function normalizeSpaces(text: string) {
@@ -15,8 +15,6 @@ describe('formatPrice', () => {
 })
 
 describe('formatCount', () => {
-  const productForms = { one: 'produkt', few: 'produkty', many: 'produktów' }
-
   it.each([
     [0, '0 produktów'],
     [1, '1 produkt'],
@@ -27,6 +25,6 @@ describe('formatCount', () => {
     [22, '22 produkty'],
     [25, '25 produktów'],
   ])('formats %i as "%s"', (count, expected) => {
-    expect(formatCount(count, productForms)).toBe(expected)
+    expect(formatCount(count, PRODUCT_FORMS)).toBe(expected)
   })
 })

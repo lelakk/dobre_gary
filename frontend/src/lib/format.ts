@@ -16,6 +16,8 @@ export interface PluralForms {
   many: string
 }
 
+export const PRODUCT_FORMS: PluralForms = { one: 'produkt', few: 'produkty', many: 'produktów' }
+
 /** Formats a count with the grammatically correct Polish noun form: 1 produkt, 3 produkty, 5 produktów. */
 export function formatCount(count: number, forms: PluralForms): string {
   const category = pluralRules.select(count)

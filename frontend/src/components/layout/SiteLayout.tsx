@@ -1,4 +1,5 @@
 import { Outlet, ScrollRestoration } from 'react-router'
+import { CartSheet } from '@/features/cart/CartSheet'
 import { Container } from './Container'
 import { SiteFooter } from './SiteFooter'
 import { SiteHeader } from './SiteHeader'
@@ -13,6 +14,7 @@ export function SiteLayout() {
         </Container>
       </main>
       <SiteFooter />
+      <CartSheet />
       <ScrollRestoration />
     </div>
   )

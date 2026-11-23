@@ -6,6 +6,7 @@ import { ProductImage } from '@/components/product/ProductImage'
 import { StockStatus } from '@/components/product/StockStatus'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { ProductPurchase } from './ProductPurchase'
 
 export function ProductDetails({ product }: { product: Product }) {
   return (
@@ -28,6 +29,7 @@ export function ProductDetails({ product }: { product: Product }) {
         </div>
 
         <ProductVariants />
+        <ProductPurchase product={product} />
 
         <Separator />
 

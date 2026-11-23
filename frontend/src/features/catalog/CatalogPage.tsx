@@ -6,14 +6,12 @@ import type { Product } from '@/api/types'
 import { EmptyState } from '@/components/EmptyState'
 import { QueryErrorAlert } from '@/components/QueryErrorAlert'
 import { Button } from '@/components/ui/button'
-import { formatCount } from '@/lib/format'
+import { formatCount, PRODUCT_FORMS } from '@/lib/format'
 import { filterProducts, getBrands } from './catalog-filters'
 import { CatalogToolbar } from './CatalogToolbar'
 import { buildCategoryOptions } from './category-tree'
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid'
 import { useCatalogFilters } from './use-catalog-filters'
-
-const PRODUCT_FORMS = { one: 'produkt', few: 'produkty', many: 'produktów' }
 
 export function CatalogPage() {
   const productsQuery = useQuery(productQueries.all())
