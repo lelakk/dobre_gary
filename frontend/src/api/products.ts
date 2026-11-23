@@ -8,4 +8,9 @@ export const productQueries = {
       queryKey: ['products'],
       queryFn: () => get<Product[]>('/products'),
     }),
+  detail: (productId: number) =>
+    queryOptions({
+      queryKey: ['products', productId],
+      queryFn: () => get<Product>(`/products/${productId}`),
+    }),
 }
