@@ -84,6 +84,26 @@ class UserControllerTest {
     }
 
     @Test
+    void acceptsEmptyPhoneFromFormAndRejectsLetters() throws Exception {
+        when(userService.updateUser(eq(1L), any(UpdateUserRequest.class))).thenReturn(sampleUser(1L));
+
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"email": "jan.kowalski@example.com", "firstName": "Jan", "lastName": "Kowalski", "phone": ""}
+                                """))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"email": "jan.kowalski@example.com", "firstName": "Jan", "lastName": "Kowalski", "phone": "abc"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.phone").value("Invalid phone number format"));
+    }
+
+    @Test
     void mapsDuplicateEmailToConflict() throws Exception {
         when(userService.updateUser(eq(1L), any(UpdateUserRequest.class)))
                 .thenThrow(new ConflictException("User with email already exists: anna@example.com"));
