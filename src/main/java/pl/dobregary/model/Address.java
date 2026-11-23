@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Generated;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -78,6 +79,7 @@ public class Address {
     @Column(name = "postal_code", nullable = false, length = 20)
     private String postalCode;
 
+    @Generated
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 

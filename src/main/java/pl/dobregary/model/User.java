@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Generated;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -60,6 +61,7 @@ public class User {
     @Column(name = "phone", length = 30)
     private String phone;
 
+    @Generated
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
