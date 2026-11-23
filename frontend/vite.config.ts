@@ -20,4 +20,22 @@ export default defineConfig({
       '/api': BACKEND_URL,
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Third-party code changes rarely, so it goes into long-cacheable chunks of its own;
+        // React is split from the rest to keep every chunk under Vite's 500 kB warning limit.
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 2,
+            },
+            { name: 'vendor', test: /node_modules/, priority: 1 },
+          ],
+        },
+      },
+    },
+  },
 })
