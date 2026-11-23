@@ -22,6 +22,10 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number]
 export const PAYMENT_METHODS = ['blik', 'credit_card', 'paypal', 'bank_transfer', 'stripe'] as const
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
+export function isPaymentMethod(value: string): value is PaymentMethod {
+  return PAYMENT_METHODS.includes(value as PaymentMethod)
+}
+
 /** ProductResponse: a product together with its current stock from the inventory table. */
 export interface Product {
   productId: number

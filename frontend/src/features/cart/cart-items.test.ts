@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Product } from '@/api/types'
-import { exceedsStock, getLineTotal, getSubtotal, toCartItems } from './cart-items'
+import { exceedsStock, getLineTotal, getSubtotal, hasStockIssues, toCartItems } from './cart-items'
 
 function product(productId: number, basePrice: number, quantity = 10): Product {
   return {
@@ -59,5 +59,7 @@ describe('cart items', () => {
 
     expect(exceedsStock(ok)).toBe(false)
     expect(exceedsStock(tooMany)).toBe(true)
+    expect(hasStockIssues([ok])).toBe(false)
+    expect(hasStockIssues([ok, tooMany])).toBe(true)
   })
 })

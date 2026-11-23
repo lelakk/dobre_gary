@@ -71,6 +71,11 @@ function CartContents({ onNavigate }: { onNavigate: () => void }) {
           <span>Suma</span>
           <Price amount={subtotal} />
         </div>
+        <Button asChild size="lg">
+          <Link to={paths.checkout} onClick={onNavigate}>
+            Przejdź do kasy
+          </Link>
+        </Button>
       </SheetFooter>
     </>
   )

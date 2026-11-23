@@ -29,3 +29,7 @@ export function getSubtotal(items: CartItem[]): Money {
 export function exceedsStock(item: CartItem): boolean {
   return item.quantity > item.product.quantity
 }
+
+export function hasStockIssues(items: CartItem[]): boolean {
+  return items.some(exceedsStock)
+}
