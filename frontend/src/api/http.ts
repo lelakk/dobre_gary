@@ -2,15 +2,25 @@ import type { ApiErrorResponse } from './types'
 
 const API_BASE_PATH = '/api'
 
-/** A non-2xx response from the backend, carrying the message produced by GlobalExceptionHandler. */
+/** A non-2xx response from the backend (or from the dev proxy in front of it). */
 export class ApiError extends Error {
   readonly status: number
+  /**
+   * Message produced by GlobalExceptionHandler, meant for the user. Null when the response had no
+   * such body, e.g. the 502 the Vite proxy returns when the backend is not running.
+   */
+  readonly serverMessage: string | null
   readonly fieldErrors: Readonly<Record<string, string>>
 
-  constructor(status: number, message: string, fieldErrors: Record<string, string> = {}) {
-    super(message)
+  constructor(
+    status: number,
+    serverMessage: string | null,
+    fieldErrors: Record<string, string> = {},
+  ) {
+    super(serverMessage ?? `HTTP ${status}`)
     this.name = 'ApiError'
     this.status = status
+    this.serverMessage = serverMessage
     this.fieldErrors = fieldErrors
   }
 }
@@ -36,8 +46,7 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
 
 async function toApiError(response: Response): Promise<ApiError> {
   const body = await readErrorBody(response)
-  const message = body?.message || body?.error || response.statusText || `HTTP ${response.status}`
-  return new ApiError(response.status, message, body?.fieldErrors ?? {})
+  return new ApiError(response.status, body?.message || null, body?.fieldErrors ?? {})
 }
 
 async function readErrorBody(response: Response): Promise<Partial<ApiErrorResponse> | null> {

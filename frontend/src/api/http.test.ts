@@ -57,14 +57,19 @@ describe('http client', () => {
     expect(error).toBeInstanceOf(ApiError)
     expect(error).toMatchObject({
       status: 400,
-      message: 'Błąd: Niewystarczająca ilość dostępnego produktu!',
+      serverMessage: 'Błąd: Niewystarczająca ilość dostępnego produktu!',
       fieldErrors: { quantity: 'Quantity must be at least 1' },
     })
   })
 
-  it('falls back to the status text when the error body is not JSON', async () => {
-    mockFetch(new Response('upstream down', { status: 502, statusText: 'Bad Gateway' }))
+  it('has no server message when the error body is not from the backend', async () => {
+    // What the Vite dev proxy returns when nothing listens on the backend port.
+    mockFetch(new Response('', { status: 502, statusText: 'Bad Gateway' }))
 
-    await expect(get('/products')).rejects.toMatchObject({ status: 502, message: 'Bad Gateway' })
+    await expect(get('/products')).rejects.toMatchObject({
+      status: 502,
+      serverMessage: null,
+      message: 'HTTP 502',
+    })
   })
 })
