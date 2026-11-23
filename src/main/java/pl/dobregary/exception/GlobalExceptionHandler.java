@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Pattern MARIADB_CONNECTION_PREFIX = Pattern.compile("^\\(conn=\\d+\\)\\s*");
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
@@ -71,14 +74,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex) {
-        Throwable rootCause = NestedExceptionUtils.getMostSpecificCause(ex);
-        return buildResponse(HttpStatus.CONFLICT, rootCause.getMessage());
+        return buildResponse(HttpStatus.CONFLICT, databaseMessage(ex));
     }
 
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<ApiError> handleDatabaseError(DataAccessException ex) {
-        Throwable rootCause = NestedExceptionUtils.getMostSpecificCause(ex);
-        return buildResponse(HttpStatus.BAD_REQUEST, rootCause.getMessage());
+        return buildResponse(HttpStatus.BAD_REQUEST, databaseMessage(ex));
+    }
+
+    /**
+     * Returns the root database message (e.g. a trigger's SIGNAL text) without the
+     * "(conn=N) " connection prefix that the MariaDB JDBC driver prepends.
+     */
+    private String databaseMessage(DataAccessException ex) {
+        String message = NestedExceptionUtils.getMostSpecificCause(ex).getMessage();
+        return message == null ? null : MARIADB_CONNECTION_PREFIX.matcher(message).replaceFirst("");
     }
 
     private ResponseEntity<ApiError> buildResponse(HttpStatus status, String message) {

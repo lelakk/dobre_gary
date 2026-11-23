@@ -47,4 +47,21 @@ class GlobalExceptionHandlerTest {
         assertNotNull(integrityResponse.getBody());
         assertEquals("Duplicate entry 'GAR-001' for key 'uq_products_sku'", integrityResponse.getBody().message());
     }
+
+    @Test
+    void stripsMariaDbConnectionPrefixFromDatabaseMessages() {
+        SQLException triggerSqlEx = new SQLException("(conn=6) Błąd: Niewystarczająca ilość dostępnego produktu!", "45000", 1644);
+        ResponseEntity<ApiError> triggerResponse = handler.handleDatabaseError(
+                new UncategorizedSQLException("CallableStatement", "{call sp()}", triggerSqlEx));
+        assertNotNull(triggerResponse.getBody());
+        assertEquals("Błąd: Niewystarczająca ilość dostępnego produktu!", triggerResponse.getBody().message());
+
+        DataIntegrityViolationException fkEx = new DataIntegrityViolationException(
+                "FK",
+                new SQLException("(conn=12) Cannot delete or update a parent row: a foreign key constraint fails")
+        );
+        ResponseEntity<ApiError> fkResponse = handler.handleDataIntegrity(fkEx);
+        assertNotNull(fkResponse.getBody());
+        assertEquals("Cannot delete or update a parent row: a foreign key constraint fails", fkResponse.getBody().message());
+    }
 }

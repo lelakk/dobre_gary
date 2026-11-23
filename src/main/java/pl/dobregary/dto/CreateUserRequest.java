@@ -24,7 +24,7 @@ public record CreateUserRequest(
         String lastName,
 
         @Size(max = 30)
-        @Pattern(regexp = "^[+]?[0-9 ()-]+$", message = "Invalid phone number format")
+        @Pattern(regexp = "^([+]?[0-9 ()-]+)?$", message = "Invalid phone number format")
         String phone
 ) {
 }
