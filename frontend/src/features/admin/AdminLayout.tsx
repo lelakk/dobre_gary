@@ -1,4 +1,4 @@
-import { BarChart3, type LucideIcon, Package, Tags, Users } from 'lucide-react'
+import { BarChart3, ClipboardList, type LucideIcon, Package, Tags, Users } from 'lucide-react'
 import { Navigate, NavLink, Outlet } from 'react-router'
 import { paths } from '@/app/paths'
 import { cn } from '@/lib/utils'
@@ -13,6 +13,7 @@ const ADMIN_SECTIONS: AdminSection[] = [
   { to: paths.adminProducts, label: 'Produkty', icon: Package },
   { to: paths.adminCategories, label: 'Kategorie', icon: Tags },
   { to: paths.adminCustomers, label: 'Klienci', icon: Users },
+  { to: paths.adminOrders, label: 'Zamówienia', icon: ClipboardList },
   { to: paths.adminReports, label: 'Raporty', icon: BarChart3 },
 ]
 
