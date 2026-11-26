@@ -3,6 +3,7 @@ import type { Address } from '@/api/types'
 import {
   formatAddress,
   formatCount,
+  formatDate,
   formatDateTime,
   formatPrice,
   ORDER_FORMS,
@@ -25,6 +26,12 @@ describe('formatPrice', () => {
 describe('formatDateTime', () => {
   it('formats the stored date and time in Polish', () => {
     expect(normalizeSpaces(formatDateTime('2026-11-23T22:06:49'))).toBe('23 listopada 2026 22:06')
+  })
+})
+
+describe('formatDate', () => {
+  it('formats the stored date without the time', () => {
+    expect(normalizeSpaces(formatDate('2026-11-23T22:06:49'))).toBe('23 lis 2026')
   })
 })
 
