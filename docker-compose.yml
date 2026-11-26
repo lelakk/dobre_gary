@@ -1,6 +1,6 @@
 services:
   mariadb:
-    image: mariadb:latest
+    image: mariadb:13.0.2
     container_name: dobre-gary-db
     restart: always
     environment:
