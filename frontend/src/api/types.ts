@@ -75,6 +75,23 @@ export interface User {
   createdAt: IsoDateTime
 }
 
+/** CreateUserRequest: body of POST /api/users (the password is stored as a SHA-256 hash). */
+export interface CreateUserRequest {
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phone: string | null
+}
+
+/** UpdateUserRequest: body of PUT /api/users/{id} (the password cannot be changed here). */
+export interface UpdateUserRequest {
+  email: string
+  firstName: string
+  lastName: string
+  phone: string | null
+}
+
 /** AddressResponse: an address owned by a user. */
 export interface Address {
   addressId: number

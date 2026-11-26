@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { User } from '@/api/types'
 import {
   Table,
@@ -12,7 +13,13 @@ import { formatDate } from '@/lib/format'
 /** Secondary columns hidden on phones, so the important ones fit the screen. */
 const WIDE_SCREEN_ONLY = 'hidden md:table-cell'
 
-export function CustomersTable({ customers }: { customers: User[] }) {
+interface CustomersTableProps {
+  customers: User[]
+  /** Buttons shown at the end of each row (edit, delete). */
+  renderActions: (customer: User) => ReactNode
+}
+
+export function CustomersTable({ customers, renderActions }: CustomersTableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200">
       <Table>
@@ -22,6 +29,9 @@ export function CustomersTable({ customers }: { customers: User[] }) {
             <TableHead className={WIDE_SCREEN_ONLY}>E-mail</TableHead>
             <TableHead className={WIDE_SCREEN_ONLY}>Telefon</TableHead>
             <TableHead className={WIDE_SCREEN_ONLY}>Konto od</TableHead>
+            <TableHead>
+              <span className="sr-only">Akcje</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -41,6 +51,7 @@ export function CustomersTable({ customers }: { customers: User[] }) {
               <TableCell className={`${WIDE_SCREEN_ONLY} text-zinc-500`}>
                 {formatDate(customer.createdAt)}
               </TableCell>
+              <TableCell className="text-right">{renderActions(customer)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
