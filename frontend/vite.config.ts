@@ -32,6 +32,12 @@ export default defineConfig({
               test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
               priority: 2,
             },
+            // Form libraries are used only by the admin panel, so shoppers never download them.
+            {
+              name: 'forms',
+              test: /node_modules[\\/](zod|react-hook-form|@hookform)[\\/]/,
+              priority: 2,
+            },
             { name: 'vendor', test: /node_modules/, priority: 1 },
           ],
         },

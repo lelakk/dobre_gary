@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Category, Product } from '@/api/types'
 import { Price } from '@/components/Price'
 import {
@@ -14,9 +15,11 @@ import { cn } from '@/lib/utils'
 interface ProductsTableProps {
   products: Product[]
   categories: Category[]
+  /** Buttons shown at the end of each row (edit, delete). */
+  renderActions: (product: Product) => ReactNode
 }
 
-export function ProductsTable({ products, categories }: ProductsTableProps) {
+export function ProductsTable({ products, categories, renderActions }: ProductsTableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200">
       <Table>
@@ -28,6 +31,9 @@ export function ProductsTable({ products, categories }: ProductsTableProps) {
             <TableHead className="text-right">Cena</TableHead>
             <TableHead className="text-right">Stan</TableHead>
             <TableHead>Kategorie</TableHead>
+            <TableHead>
+              <span className="sr-only">Akcje</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,6 +58,7 @@ export function ProductsTable({ products, categories }: ProductsTableProps) {
                 <TableCell className="max-w-56 truncate text-zinc-500" title={categoryNames}>
                   {categoryNames || '—'}
                 </TableCell>
+                <TableCell className="text-right">{renderActions(product)}</TableCell>
               </TableRow>
             )
           })}
