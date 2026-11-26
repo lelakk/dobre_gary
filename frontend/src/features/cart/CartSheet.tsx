@@ -16,10 +16,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatCount, PRODUCT_FORMS } from '@/lib/format'
 import { CartItemRow } from './CartItemRow'
-import { useCart, useCartItems } from './use-cart'
+import { useCart, useCartDrawer, useCartItems } from './use-cart'
 
 export function CartSheet() {
-  const { isOpen, setOpen, totalQuantity } = useCart()
+  const { isOpen, setOpen } = useCartDrawer()
+  const { totalQuantity } = useCart()
   const close = () => setOpen(false)
 
   return (

@@ -2,7 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import { use } from 'react'
 import { productQueries } from '@/api/products'
 import type { Product } from '@/api/types'
-import { CartContext, type CartContextValue } from './cart-context'
+import {
+  CartContext,
+  type CartContextValue,
+  CartDrawerContext,
+  type CartDrawerContextValue,
+} from './cart-context'
 import { getSubtotal, toCartItems } from './cart-items'
 import { findQuantity } from './cart-reducer'
 
@@ -12,6 +17,15 @@ export function useCart(): CartContextValue {
     throw new Error('useCart must be used inside <CartProvider>')
   }
   return cart
+}
+
+/** Open state of the cart drawer; only the drawer itself should need it. */
+export function useCartDrawer(): CartDrawerContextValue {
+  const drawer = use(CartDrawerContext)
+  if (!drawer) {
+    throw new Error('useCartDrawer must be used inside <CartProvider>')
+  }
+  return drawer
 }
 
 /** Cart lines joined with the current product data (prices, stock) from the API. */
@@ -24,7 +38,7 @@ export function useCartItems() {
 
 /** How many more units of a product fit in the cart, and an action that adds them. */
 export function useAddToCart(product: Product) {
-  const { lines, addItem, setOpen } = useCart()
+  const { lines, addItem, openCart } = useCart()
   const quantityInCart = findQuantity(lines, product.productId)
 
   return {
@@ -33,7 +47,7 @@ export function useAddToCart(product: Product) {
     /** Adds the product and opens the cart drawer, so the shopper sees what happened. */
     addToCart: (quantity = 1) => {
       addItem(product, quantity)
-      setOpen(true)
+      openCart()
     },
   }
 }

@@ -4,12 +4,12 @@ import { formatCount, PRODUCT_FORMS } from '@/lib/format'
 import { useCart } from './use-cart'
 
 export function CartButton() {
-  const { totalQuantity, setOpen } = useCart()
+  const { totalQuantity, openCart } = useCart()
 
   return (
     <Button
       variant="ghost"
-      onClick={() => setOpen(true)}
+      onClick={openCart}
       aria-label={`Koszyk: ${formatCount(totalQuantity, PRODUCT_FORMS)}`}
     >
       <ShoppingBag />
