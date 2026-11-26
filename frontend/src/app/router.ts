@@ -51,6 +51,20 @@ export const router = createBrowserRouter([
                 .CategoriesAdminPage,
             }),
           },
+          {
+            path: 'customers',
+            lazy: async () => ({
+              Component: (await import('@/features/admin/customers/CustomersAdminPage'))
+                .CustomersAdminPage,
+            }),
+          },
+          {
+            path: 'customers/:userId',
+            lazy: async () => ({
+              Component: (await import('@/features/admin/customers/CustomerDetailsPage'))
+                .CustomerDetailsPage,
+            }),
+          },
         ],
       },
       { path: '*', Component: NotFoundPage },

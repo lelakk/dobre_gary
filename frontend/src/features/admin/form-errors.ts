@@ -28,3 +28,12 @@ export function showServerError<T extends FieldValues>(
   }
   setError('root.server', { message: getErrorMessage(error) })
 }
+
+/**
+ * Error description for deletions the database refuses with 409 because the record is still
+ * referenced (e.g. a customer with orders); other failures keep their usual message.
+ */
+export function explainConflict(conflictMessage: string): (error: unknown) => string {
+  return (error) =>
+    error instanceof ApiError && error.status === 409 ? conflictMessage : getErrorMessage(error)
+}

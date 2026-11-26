@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { ApiError } from '@/api/http'
 import { SERVER_UNREACHABLE_MESSAGE } from '@/lib/errors'
-import { showServerError } from './form-errors'
+import { explainConflict, showServerError } from './form-errors'
 
 interface Form {
   sku: string
@@ -41,5 +41,24 @@ describe('showServerError', () => {
     expect(setError).toHaveBeenCalledExactlyOnceWith('root.server', {
       message: SERVER_UNREACHABLE_MESSAGE,
     })
+  })
+})
+
+describe('explainConflict', () => {
+  const describeError = explainConflict('Tego klienta nie można usunąć, bo ma zamówienia.')
+
+  it('replaces the database message of a 409 with the given explanation', () => {
+    const fkError = new ApiError(
+      409,
+      'Cannot delete or update a parent row: a foreign key constraint fails',
+    )
+
+    expect(describeError(fkError)).toBe('Tego klienta nie można usunąć, bo ma zamówienia.')
+  })
+
+  it('keeps the usual message for other errors', () => {
+    expect(describeError(new ApiError(404, 'User not found with id: 7'))).toBe(
+      'User not found with id: 7',
+    )
   })
 })
