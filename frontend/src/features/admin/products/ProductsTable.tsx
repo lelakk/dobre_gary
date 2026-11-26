@@ -12,6 +12,9 @@ import {
 import { findCategoryNames } from '@/lib/category-tree'
 import { cn } from '@/lib/utils'
 
+/** Secondary columns hidden on phones, so the row actions stay on screen. */
+const WIDE_SCREEN_ONLY = 'hidden md:table-cell'
+
 interface ProductsTableProps {
   products: Product[]
   categories: Category[]
@@ -25,12 +28,12 @@ export function ProductsTable({ products, categories, renderActions }: ProductsT
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>SKU</TableHead>
+            <TableHead className="hidden sm:table-cell">SKU</TableHead>
             <TableHead>Nazwa</TableHead>
-            <TableHead>Marka</TableHead>
+            <TableHead className={WIDE_SCREEN_ONLY}>Marka</TableHead>
             <TableHead className="text-right">Cena</TableHead>
             <TableHead className="text-right">Stan</TableHead>
-            <TableHead>Kategorie</TableHead>
+            <TableHead className={WIDE_SCREEN_ONLY}>Kategorie</TableHead>
             <TableHead>
               <span className="sr-only">Akcje</span>
             </TableHead>
@@ -41,9 +44,17 @@ export function ProductsTable({ products, categories, renderActions }: ProductsT
             const categoryNames = findCategoryNames(categories, product.categoryIds).join(', ')
             return (
               <TableRow key={product.productId}>
-                <TableCell className="font-mono text-xs">{product.sku}</TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.brand}</TableCell>
+                <TableCell className="hidden font-mono text-xs sm:table-cell">
+                  {product.sku}
+                </TableCell>
+                <TableCell className="font-medium whitespace-normal">
+                  {product.name}
+                  {/* On phones the SKU column is hidden, so the SKU goes under the name. */}
+                  <span className="block font-mono text-xs font-normal text-zinc-500 sm:hidden">
+                    {product.sku}
+                  </span>
+                </TableCell>
+                <TableCell className={WIDE_SCREEN_ONLY}>{product.brand}</TableCell>
                 <TableCell className="text-right">
                   <Price amount={product.basePrice} />
                 </TableCell>
@@ -55,7 +66,10 @@ export function ProductsTable({ products, categories, renderActions }: ProductsT
                 >
                   {product.quantity}
                 </TableCell>
-                <TableCell className="max-w-56 truncate text-zinc-500" title={categoryNames}>
+                <TableCell
+                  className={cn(WIDE_SCREEN_ONLY, 'max-w-56 truncate text-zinc-500')}
+                  title={categoryNames}
+                >
                   {categoryNames || '—'}
                 </TableCell>
                 <TableCell className="text-right">{renderActions(product)}</TableCell>
