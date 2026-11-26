@@ -1,5 +1,5 @@
 import { type LucideIcon, Package, Tags, Users } from 'lucide-react'
-import { NavLink, Outlet } from 'react-router'
+import { Navigate, NavLink, Outlet } from 'react-router'
 import { paths } from '@/app/paths'
 import { cn } from '@/lib/utils'
 
@@ -49,4 +49,9 @@ export function AdminLayout() {
       <Outlet />
     </div>
   )
+}
+
+/** /admin has no page of its own, so it opens the first section. */
+export function AdminIndexRedirect() {
+  return <Navigate to={paths.adminProducts} replace />
 }
