@@ -22,7 +22,7 @@ import {
   SORT_OPTIONS,
   type SortOption,
 } from './catalog-filters'
-import type { CategoryOption } from './category-tree'
+import type { CategoryOption } from '@/lib/category-tree'
 
 /** Radix Select items cannot have an empty value, so "no filter" gets an explicit one. */
 const ALL = 'all'

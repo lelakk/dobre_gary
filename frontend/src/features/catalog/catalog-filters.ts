@@ -1,6 +1,6 @@
 import type { Category, Product } from '@/api/types'
 import { parseId } from '@/lib/parse'
-import { collectCategoryTreeIds } from './category-tree'
+import { collectCategoryTreeIds } from '@/lib/category-tree'
 
 export const SORT_OPTIONS = ['newest', 'price-asc', 'price-desc', 'name-asc'] as const
 export type SortOption = (typeof SORT_OPTIONS)[number]

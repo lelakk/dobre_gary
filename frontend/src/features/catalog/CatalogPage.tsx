@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { formatCount, PRODUCT_FORMS } from '@/lib/format'
 import { filterProducts, getBrands } from './catalog-filters'
 import { CatalogToolbar } from './CatalogToolbar'
-import { buildCategoryOptions } from './category-tree'
+import { buildCategoryOptions } from '@/lib/category-tree'
 import { ProductGrid, ProductGridSkeleton } from './ProductGrid'
 import { useCatalogFilters } from './use-catalog-filters'
 
