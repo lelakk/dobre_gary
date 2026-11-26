@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+import type { Category } from '@/api/types'
 import {
   Table,
   TableBody,
@@ -8,7 +10,13 @@ import {
 } from '@/components/ui/table'
 import type { CategoryRow } from './category-rows'
 
-export function CategoriesTable({ rows }: { rows: CategoryRow[] }) {
+interface CategoriesTableProps {
+  rows: CategoryRow[]
+  /** Buttons shown at the end of each row (edit, delete). */
+  renderActions: (category: Category) => ReactNode
+}
+
+export function CategoriesTable({ rows, renderActions }: CategoriesTableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200">
       <Table>
@@ -17,6 +25,9 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }) {
             <TableHead>Nazwa</TableHead>
             <TableHead className="hidden sm:table-cell">Kategoria nadrzędna</TableHead>
             <TableHead className="text-right">Produkty</TableHead>
+            <TableHead>
+              <span className="sr-only">Akcje</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -38,6 +49,7 @@ export function CategoriesTable({ rows }: { rows: CategoryRow[] }) {
                 {category.parentName ?? '—'}
               </TableCell>
               <TableCell className="text-right tabular-nums">{productCount}</TableCell>
+              <TableCell className="text-right">{renderActions(category)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

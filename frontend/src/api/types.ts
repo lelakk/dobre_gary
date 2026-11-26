@@ -59,6 +59,12 @@ export interface Category {
   name: string
 }
 
+/** CategoryRequest: body of POST /api/categories and PUT /api/categories/{id}. */
+export interface CategoryRequest {
+  parentId: number | null
+  name: string
+}
+
 /** UserResponse: a customer account. */
 export interface User {
   userId: number
