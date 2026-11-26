@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Category } from '@/api/types'
-import { buildCategoryOptions, collectCategoryTreeIds } from './category-tree'
+import { buildCategoryOptions, collectCategoryTreeIds, findCategoryNames } from './category-tree'
 
 function category(categoryId: number, name: string, parentId: number | null = null): Category {
   return { categoryId, name, parentId, parentName: null }
@@ -36,5 +36,14 @@ describe('collectCategoryTreeIds', () => {
   it('returns just the category when it has no children or is unknown', () => {
     expect(collectCategoryTreeIds(categories, 5)).toEqual(new Set([5]))
     expect(collectCategoryTreeIds([], 42)).toEqual(new Set([42]))
+  })
+})
+
+describe('findCategoryNames', () => {
+  it('returns the names of the given categories and ignores unknown ids', () => {
+    expect(findCategoryNames(categories, [5, 1, 99])).toEqual([
+      'Garnki i patelnie',
+      'Komplety sztućców',
+    ])
   })
 })

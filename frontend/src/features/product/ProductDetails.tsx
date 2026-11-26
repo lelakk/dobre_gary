@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { categoryQueries } from '@/api/categories'
-import type { Category, Product } from '@/api/types'
+import type { Product } from '@/api/types'
 import { Price } from '@/components/Price'
 import { ProductImage } from '@/components/product/ProductImage'
 import { StockStatus } from '@/components/product/StockStatus'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { findCategoryNames } from '@/lib/category-tree'
 import { ProductPurchase } from './ProductPurchase'
 
 export function ProductDetails({ product }: { product: Product }) {
@@ -85,10 +86,4 @@ function ProductSpecs({ product }: { product: Product }) {
       )}
     </dl>
   )
-}
-
-function findCategoryNames(categories: Category[], categoryIds: number[]): string[] {
-  return categories
-    .filter((category) => categoryIds.includes(category.categoryId))
-    .map((category) => category.name)
 }
