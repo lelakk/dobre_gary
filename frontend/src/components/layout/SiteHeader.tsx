@@ -1,6 +1,7 @@
-import { CookingPot } from 'lucide-react'
+import { CookingPot, LayoutDashboard } from 'lucide-react'
 import { Link } from 'react-router'
 import { paths } from '@/app/paths'
+import { Button } from '@/components/ui/button'
 import { CartButton } from '@/features/cart/CartButton'
 import { Container } from './Container'
 
@@ -15,7 +16,15 @@ export function SiteHeader() {
           <CookingPot className="size-5" aria-hidden />
           Dobre Gary
         </Link>
-        <CartButton />
+        <nav aria-label="Nawigacja główna" className="flex items-center gap-1">
+          <Button asChild variant="ghost">
+            <Link to={paths.admin} aria-label="Panel administracyjny">
+              <LayoutDashboard />
+              <span className="hidden sm:inline">Panel</span>
+            </Link>
+          </Button>
+          <CartButton />
+        </nav>
       </Container>
     </header>
   )

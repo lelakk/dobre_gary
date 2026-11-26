@@ -1,0 +1,62 @@
+import type { Category, Product } from '@/api/types'
+import { Price } from '@/components/Price'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { findCategoryNames } from '@/lib/category-tree'
+import { cn } from '@/lib/utils'
+
+interface ProductsTableProps {
+  products: Product[]
+  categories: Category[]
+}
+
+export function ProductsTable({ products, categories }: ProductsTableProps) {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-zinc-200">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>SKU</TableHead>
+            <TableHead>Nazwa</TableHead>
+            <TableHead>Marka</TableHead>
+            <TableHead className="text-right">Cena</TableHead>
+            <TableHead className="text-right">Stan</TableHead>
+            <TableHead>Kategorie</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {products.map((product) => {
+            const categoryNames = findCategoryNames(categories, product.categoryIds).join(', ')
+            return (
+              <TableRow key={product.productId}>
+                <TableCell className="font-mono text-xs">{product.sku}</TableCell>
+                <TableCell className="font-medium">{product.name}</TableCell>
+                <TableCell>{product.brand}</TableCell>
+                <TableCell className="text-right">
+                  <Price amount={product.basePrice} />
+                </TableCell>
+                <TableCell
+                  className={cn(
+                    'text-right tabular-nums',
+                    product.quantity === 0 && 'text-destructive',
+                  )}
+                >
+                  {product.quantity}
+                </TableCell>
+                <TableCell className="max-w-56 truncate text-zinc-500" title={categoryNames}>
+                  {categoryNames || '—'}
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
