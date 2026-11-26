@@ -1,10 +1,9 @@
 import type { ComponentType } from 'react'
-import { createBrowserRouter, redirect, type RouteObject } from 'react-router'
+import { createBrowserRouter, type RouteObject } from 'react-router'
 import { SiteLayout } from '@/components/layout/SiteLayout'
 import { PageLoadingFallback } from '@/components/PageLoadingFallback'
 import { CatalogPage } from '@/features/catalog/CatalogPage'
 import { NotFoundPage } from './NotFoundPage'
-import { paths } from './paths'
 
 /**
  * A page split into its own chunk. When the first visit goes straight to its URL, the router
@@ -45,7 +44,12 @@ export const router = createBrowserRouter([
         path: 'admin',
         ...lazyPage(async () => (await import('@/features/admin/AdminLayout')).AdminLayout),
         children: [
-          { index: true, loader: () => redirect(paths.adminProducts) },
+          {
+            index: true,
+            ...lazyPage(
+              async () => (await import('@/features/admin/AdminLayout')).AdminIndexRedirect,
+            ),
+          },
           {
             path: 'products',
             ...lazyPage(
