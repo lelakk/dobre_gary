@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
-import { Pencil, Plus, SearchX } from 'lucide-react'
+import { Plus, SearchX } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import type { User } from '@/api/types'
 import { userQueries } from '@/api/users'
@@ -10,12 +10,15 @@ import { Button } from '@/components/ui/button'
 import { CUSTOMER_FORMS, formatCount } from '@/lib/format'
 import { matchesSearchTerm } from '@/lib/search'
 import { AdminSectionHeader } from '../AdminSectionHeader'
+import { RowActions } from '../RowActions'
 import { TableSkeleton } from '../TableSkeleton'
 import { CustomerFormDialog } from './CustomerFormDialog'
 import { CustomersTable } from './CustomersTable'
+import { DeleteCustomerDialog } from './DeleteCustomerDialog'
 
 /** The dialog currently open on the page, if any. */
-type OpenDialog = { kind: 'create' } | { kind: 'edit'; customer: User } | null
+type OpenDialog =
+  { kind: 'create' } | { kind: 'edit'; customer: User } | { kind: 'delete'; customer: User } | null
 
 const collator = new Intl.Collator('pl')
 const byLastName = (a: User, b: User) =>
@@ -56,14 +59,11 @@ export function CustomersAdminPage() {
         usersQuery={usersQuery}
         visibleCustomers={visibleCustomers}
         renderActions={(customer) => (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => setOpenDialog({ kind: 'edit', customer })}
-            aria-label={`Edytuj: ${customer.firstName} ${customer.lastName}`}
-          >
-            <Pencil />
-          </Button>
+          <RowActions
+            label={`${customer.firstName} ${customer.lastName}`}
+            onEdit={() => setOpenDialog({ kind: 'edit', customer })}
+            onDelete={() => setOpenDialog({ kind: 'delete', customer })}
+          />
         )}
       />
 
@@ -72,6 +72,9 @@ export function CustomersAdminPage() {
       )}
       {openDialog?.kind === 'edit' && (
         <CustomerFormDialog customer={openDialog.customer} onClose={closeDialog} />
+      )}
+      {openDialog?.kind === 'delete' && (
+        <DeleteCustomerDialog customer={openDialog.customer} onClose={closeDialog} />
       )}
     </section>
   )

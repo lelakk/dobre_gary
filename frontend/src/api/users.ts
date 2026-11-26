@@ -1,5 +1,5 @@
 import { queryOptions, skipToken } from '@tanstack/react-query'
-import { get, post, put } from './http'
+import { get, post, put, remove } from './http'
 import type { Address, CreateUserRequest, UpdateUserRequest, User } from './types'
 
 export const userQueries = {
@@ -22,4 +22,9 @@ export function createUser(request: CreateUserRequest): Promise<User> {
 
 export function updateUser(userId: number, request: UpdateUserRequest): Promise<User> {
   return put<User>(`/users/${userId}`, request)
+}
+
+/** Removes the account and its addresses; the backend refuses (409) when the user has orders. */
+export function deleteUser(userId: number): Promise<void> {
+  return remove(`/users/${userId}`)
 }
