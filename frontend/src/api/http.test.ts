@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, get, post } from './http'
+import { ApiError, get, post, put, remove } from './http'
 
 function mockFetch(response: Response) {
   const fetchMock = vi.fn().mockResolvedValue(response)
@@ -37,6 +37,28 @@ describe('http client', () => {
     expect(init.method).toBe('POST')
     expect(init.headers).toMatchObject({ 'Content-Type': 'application/json' })
     expect(JSON.parse(init.body)).toEqual({ productId: 3, quantity: 2 })
+  })
+
+  it('sends PUT bodies as JSON', async () => {
+    const fetchMock = mockFetch(jsonResponse({ productId: 3 }))
+
+    const product = await put('/products/3', { name: 'Garnek' })
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('/api/products/3')
+    expect(init.method).toBe('PUT')
+    expect(JSON.parse(init.body)).toEqual({ name: 'Garnek' })
+    expect(product).toEqual({ productId: 3 })
+  })
+
+  it('resolves DELETE requests answered with 204 No Content', async () => {
+    const fetchMock = mockFetch(new Response(null, { status: 204 }))
+
+    await expect(remove('/products/3')).resolves.toBeUndefined()
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/products/3',
+      expect.objectContaining({ method: 'DELETE' }),
+    )
   })
 
   it('throws ApiError with the backend message and field errors', async () => {

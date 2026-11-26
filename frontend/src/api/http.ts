@@ -33,6 +33,17 @@ export function post<T>(path: string, body: unknown): Promise<T> {
   return request<T>(path, { method: 'POST', body: JSON.stringify(body) })
 }
 
+export function put<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, { method: 'PUT', body: JSON.stringify(body) })
+}
+
+/** DELETE request; the backend answers 204 No Content. */
+export function remove(path: string): Promise<void> {
+  return request<void>(path, { method: 'DELETE' })
+}
+
+const NO_CONTENT = 204
+
 async function request<T>(path: string, init: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_PATH}${path}`, {
     ...init,
@@ -41,7 +52,7 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
   if (!response.ok) {
     throw await toApiError(response)
   }
-  return (await response.json()) as T
+  return response.status === NO_CONTENT ? (undefined as T) : ((await response.json()) as T)
 }
 
 async function toApiError(response: Response): Promise<ApiError> {

@@ -9,4 +9,6 @@ export const paths = {
   /** e.g. /checkout/confirmation?orders=12,13 */
   orderConfirmation: (orderIds: number[]) =>
     `/checkout/confirmation?${ORDER_IDS_PARAM}=${orderIds.join(',')}`,
+  admin: '/admin',
+  adminProducts: '/admin/products',
 } as const

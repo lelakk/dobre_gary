@@ -41,6 +41,13 @@ export function collectCategoryTreeIds(categories: Category[], rootId: number): 
   return ids
 }
 
+/** Names of the given categories, in the order of the category list. */
+export function findCategoryNames(categories: Category[], categoryIds: number[]): string[] {
+  return categories
+    .filter((category) => categoryIds.includes(category.categoryId))
+    .map((category) => category.name)
+}
+
 function groupByParentId(categories: Category[]): Map<number | null, Category[]> {
   const groups = new Map<number | null, Category[]>()
   for (const category of categories.toSorted((a, b) => collator.compare(a.name, b.name))) {

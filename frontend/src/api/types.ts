@@ -39,6 +39,18 @@ export interface Product {
   createdAt: IsoDateTime
 }
 
+/** ProductRequest: body of POST /api/products and PUT /api/products/{id}. */
+export interface ProductRequest {
+  sku: string
+  name: string
+  brand: string
+  description: string | null
+  basePrice: Money
+  /** Stock written to the inventory table. */
+  quantity: number
+  categoryIds: number[]
+}
+
 /** CategoryResponse: a node of the category tree (parentId is null for top-level categories). */
 export interface Category {
   categoryId: number

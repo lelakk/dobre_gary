@@ -1,12 +1,6 @@
-import { Search, X } from 'lucide-react'
+import { SearchInput } from '@/components/SearchInput'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -22,7 +16,7 @@ import {
   SORT_OPTIONS,
   type SortOption,
 } from './catalog-filters'
-import type { CategoryOption } from './category-tree'
+import type { CategoryOption } from '@/lib/category-tree'
 
 /** Radix Select items cannot have an empty value, so "no filter" gets an explicit one. */
 const ALL = 'all'
@@ -51,7 +45,12 @@ export function CatalogToolbar({
 }: CatalogToolbarProps) {
   return (
     <div className="flex flex-col gap-3">
-      <SearchInput value={filters.search} onChange={(search) => onChange({ search })} />
+      <SearchInput
+        value={filters.search}
+        onChange={(search) => onChange({ search })}
+        placeholder="Szukaj po nazwie, marce lub kodzie SKU"
+        label="Szukaj produktów"
+      />
       <div className="flex flex-wrap items-center gap-2">
         <CategoryFilter
           options={categoryOptions}
@@ -81,34 +80,6 @@ export function CatalogToolbar({
 interface ControlProps<T> {
   value: T
   onChange: (value: T) => void
-}
-
-function SearchInput({ value, onChange }: ControlProps<string>) {
-  return (
-    <InputGroup>
-      <InputGroupAddon>
-        <Search aria-hidden />
-      </InputGroupAddon>
-      <InputGroupInput
-        type="search"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder="Szukaj po nazwie, marce lub kodzie SKU"
-        aria-label="Szukaj produktów"
-      />
-      {value && (
-        <InputGroupAddon align="inline-end">
-          <InputGroupButton
-            size="icon-xs"
-            onClick={() => onChange('')}
-            aria-label="Wyczyść wyszukiwanie"
-          >
-            <X />
-          </InputGroupButton>
-        </InputGroupAddon>
-      )}
-    </InputGroup>
-  )
 }
 
 function CategoryFilter({
