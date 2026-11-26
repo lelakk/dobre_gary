@@ -8,6 +8,11 @@ export const userQueries = {
       queryKey: ['users'],
       queryFn: () => get<User[]>('/users'),
     }),
+  detail: (userId: number) =>
+    queryOptions({
+      queryKey: ['users', userId],
+      queryFn: () => get<User>(`/users/${userId}`),
+    }),
   /** Addresses of a user; the query stays idle until a user is selected. */
   addresses: (userId: number | null) =>
     queryOptions({

@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
+import { paths } from '@/app/paths'
 import type { User } from '@/api/types'
 import {
   Table,
@@ -38,7 +40,12 @@ export function CustomersTable({ customers, renderActions }: CustomersTableProps
           {customers.map((customer) => (
             <TableRow key={customer.userId}>
               <TableCell className="font-medium whitespace-normal">
-                {customer.firstName} {customer.lastName}
+                <Link
+                  to={paths.adminCustomer(customer.userId)}
+                  className="hover:underline hover:underline-offset-4"
+                >
+                  {customer.firstName} {customer.lastName}
+                </Link>
                 {/* On phones the e-mail column is hidden, so the address goes under the name. */}
                 <span className="block text-xs font-normal text-zinc-500 md:hidden">
                   {customer.email}
