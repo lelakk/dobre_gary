@@ -8,7 +8,7 @@ import {
   FieldTitle,
 } from '@/components/ui/field'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { PAYMENT_METHOD_LABELS } from './order-labels'
+import { PAYMENT_METHOD_LABELS } from '@/lib/order-labels'
 
 interface PaymentMethodSectionProps {
   value: PaymentMethod | null
