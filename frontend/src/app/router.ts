@@ -80,6 +80,13 @@ export const router = createBrowserRouter([
                   .CustomerDetailsPage,
             ),
           },
+          {
+            path: 'reports',
+            ...lazyPage(
+              async () =>
+                (await import('@/features/admin/reports/ReportsAdminPage')).ReportsAdminPage,
+            ),
+          },
         ],
       },
       { path: '*', Component: NotFoundPage },

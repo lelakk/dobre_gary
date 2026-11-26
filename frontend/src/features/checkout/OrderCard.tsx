@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatDateTime } from '@/lib/format'
 import { multiplyPrice } from '@/lib/money'
-import { ORDER_STATUS_LABELS } from './order-labels'
+import { ORDER_STATUS_LABELS } from '@/lib/order-labels'
 
 interface OrderCardProps {
   orderId: number

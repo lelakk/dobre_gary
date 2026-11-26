@@ -5,9 +5,12 @@ import {
   formatCount,
   formatDate,
   formatDateTime,
+  formatInteger,
+  formatPercent,
   formatPrice,
   ORDER_FORMS,
   PRODUCT_FORMS,
+  RESULT_FORMS,
 } from './format'
 
 /** Intl uses (narrow) non-breaking spaces; normalize them so expectations stay readable. */
@@ -20,6 +23,21 @@ describe('formatPrice', () => {
     expect(normalizeSpaces(formatPrice(399.99))).toBe('399,99 zł')
     expect(normalizeSpaces(formatPrice(89.5))).toBe('89,50 zł')
     expect(normalizeSpaces(formatPrice(12345))).toBe('12 345,00 zł')
+  })
+})
+
+describe('formatInteger', () => {
+  it('formats whole numbers with Polish grouping', () => {
+    expect(normalizeSpaces(formatInteger(0))).toBe('0')
+    expect(normalizeSpaces(formatInteger(12500))).toBe('12 500')
+  })
+})
+
+describe('formatPercent', () => {
+  it('formats percentages on a 0-100 scale with up to one decimal place', () => {
+    expect(formatPercent(100)).toBe('100%')
+    expect(formatPercent(85.7)).toBe('85,7%')
+    expect(formatPercent(0)).toBe('0%')
   })
 })
 
@@ -75,5 +93,7 @@ describe('formatCount', () => {
 
   it('works for other nouns', () => {
     expect(formatCount(3, ORDER_FORMS)).toBe('3 zamówienia')
+    expect(formatCount(1, RESULT_FORMS)).toBe('1 wynik')
+    expect(formatCount(5, RESULT_FORMS)).toBe('5 wyników')
   })
 })

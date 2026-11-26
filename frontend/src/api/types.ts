@@ -156,3 +156,25 @@ export interface ApiErrorResponse {
   message: string
   fieldErrors: Record<string, string>
 }
+
+/** Analytical reports exposed by ReportController plus the v_product_stock_summary SQL view. */
+export const REPORT_IDS = [
+  'vip-customers',
+  'sales-by-category',
+  'premium-products',
+  'stock-vs-sales',
+  'low-stock',
+  'monthly-revenue',
+  'multi-shipment-orders',
+  'payment-methods',
+  'category-tree',
+  'stock-summary',
+] as const
+export type ReportId = (typeof REPORT_IDS)[number]
+
+export function isReportId(value: string): value is ReportId {
+  return REPORT_IDS.includes(value as ReportId)
+}
+
+export type ReportCellValue = string | number | boolean | null | undefined
+export type ReportRow = Record<string, ReportCellValue>
