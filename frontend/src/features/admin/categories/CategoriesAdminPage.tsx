@@ -1,5 +1,5 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
-import { Pencil, Plus, Tags } from 'lucide-react'
+import { Plus, Tags } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { categoryQueries } from '@/api/categories'
 import { productQueries } from '@/api/products'
@@ -9,13 +9,19 @@ import { QueryErrorAlert } from '@/components/QueryErrorAlert'
 import { Button } from '@/components/ui/button'
 import { CATEGORY_FORMS, formatCount } from '@/lib/format'
 import { AdminSectionHeader } from '../AdminSectionHeader'
+import { RowActions } from '../RowActions'
 import { TableSkeleton } from '../TableSkeleton'
 import { CategoriesTable } from './CategoriesTable'
 import { CategoryFormDialog } from './CategoryFormDialog'
+import { DeleteCategoryDialog } from './DeleteCategoryDialog'
 import { buildCategoryRows } from './category-rows'
 
 /** The dialog currently open on the page, if any. */
-type OpenDialog = { kind: 'create' } | { kind: 'edit'; category: Category } | null
+type OpenDialog =
+  | { kind: 'create' }
+  | { kind: 'edit'; category: Category }
+  | { kind: 'delete'; category: Category }
+  | null
 
 export function CategoriesAdminPage() {
   const categoriesQuery = useQuery(categoryQueries.all())
@@ -39,14 +45,11 @@ export function CategoriesAdminPage() {
         categoriesQuery={categoriesQuery}
         products={productsQuery.data ?? []}
         renderActions={(category) => (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => setOpenDialog({ kind: 'edit', category })}
-            aria-label={`Edytuj: ${category.name}`}
-          >
-            <Pencil />
-          </Button>
+          <RowActions
+            label={category.name}
+            onEdit={() => setOpenDialog({ kind: 'edit', category })}
+            onDelete={() => setOpenDialog({ kind: 'delete', category })}
+          />
         )}
       />
 
@@ -55,6 +58,9 @@ export function CategoriesAdminPage() {
       )}
       {openDialog?.kind === 'edit' && (
         <CategoryFormDialog category={openDialog.category} onClose={closeDialog} />
+      )}
+      {openDialog?.kind === 'delete' && (
+        <DeleteCategoryDialog category={openDialog.category} onClose={closeDialog} />
       )}
     </section>
   )
