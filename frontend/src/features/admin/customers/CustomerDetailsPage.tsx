@@ -84,12 +84,7 @@ function CustomerDetails({ customer }: { customer: User }) {
         </Button>
       </header>
 
-      <section className="flex flex-col gap-3" aria-labelledby="customer-addresses-title">
-        <h3 id="customer-addresses-title" className="font-medium">
-          Adresy
-        </h3>
-        <CustomerAddresses userId={customer.userId} />
-      </section>
+      <CustomerAddresses userId={customer.userId} />
 
       {isEditing && <CustomerFormDialog customer={customer} onClose={() => setEditing(false)} />}
     </>

@@ -105,6 +105,16 @@ export interface Address {
   createdAt: IsoDateTime
 }
 
+/** AddressRequest: body of POST/PUT /api/users/{userId}/addresses. */
+export interface AddressRequest {
+  recipientName: string
+  streetLine1: string
+  streetLine2: string | null
+  city: string
+  stateProvince: string
+  postalCode: string
+}
+
 /** OrderItemResponse */
 export interface OrderItem {
   orderItemId: number
