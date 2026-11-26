@@ -3,8 +3,9 @@ import { ShoppingBag } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { paths } from '@/app/paths'
-import { placeQuickOrder } from '@/api/orders'
+import { orderQueries, placeQuickOrder } from '@/api/orders'
 import { productQueries } from '@/api/products'
+import { reportQueries } from '@/api/reports'
 import type { Money } from '@/api/types'
 import { EmptyState } from '@/components/EmptyState'
 import { QueryErrorAlert } from '@/components/QueryErrorAlert'
@@ -66,8 +67,10 @@ function CheckoutContent({ items, subtotal }: { items: CartItem[]; subtotal: Mon
   const placeOrdersMutation = useMutation({
     mutationFn: (details: CheckoutDetails) => placeOrders(items, details, placeQuickOrder),
     onSuccess: (results) => {
-      // Stock changed in the database, so cached products are stale.
+      // Stock, orders and analytical reports changed in the database, so cached data is stale.
       void queryClient.invalidateQueries({ queryKey: productQueries.all().queryKey })
+      void queryClient.invalidateQueries({ queryKey: orderQueries.all().queryKey })
+      void queryClient.invalidateQueries({ queryKey: reportQueries.allKey })
 
       const placed = results.flatMap((result) => (result.status === 'placed' ? [result] : []))
       placed.forEach((result) => removeItem(result.product.productId))

@@ -19,6 +19,10 @@ export const ORDER_STATUSES = [
 ] as const
 export type OrderStatus = (typeof ORDER_STATUSES)[number]
 
+export function isOrderStatus(value: string): value is OrderStatus {
+  return ORDER_STATUSES.includes(value as OrderStatus)
+}
+
 export const PAYMENT_METHODS = ['blik', 'credit_card', 'paypal', 'bank_transfer', 'stripe'] as const
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]
 
@@ -146,6 +150,11 @@ export interface QuickOrderRequest {
   productId: number
   quantity: number
   paymentMethod: PaymentMethod
+}
+
+/** UpdateOrderStatusRequest: body of PATCH /api/orders/{id}/status. */
+export interface UpdateOrderStatusRequest {
+  orderStatus: OrderStatus
 }
 
 /** ApiError: error body produced by GlobalExceptionHandler. */

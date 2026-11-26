@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { ApiError, get, post, put, remove } from './http'
+import { ApiError, get, patch, post, put, remove } from './http'
 
 function mockFetch(response: Response) {
   const fetchMock = vi.fn().mockResolvedValue(response)
@@ -49,6 +49,18 @@ describe('http client', () => {
     expect(init.method).toBe('PUT')
     expect(JSON.parse(init.body)).toEqual({ name: 'Garnek' })
     expect(product).toEqual({ productId: 3 })
+  })
+
+  it('sends PATCH bodies as JSON', async () => {
+    const fetchMock = mockFetch(jsonResponse({ orderId: 12, orderStatus: 'shipped' }))
+
+    const order = await patch('/orders/12/status', { orderStatus: 'shipped' })
+
+    const [url, init] = fetchMock.mock.calls[0]
+    expect(url).toBe('/api/orders/12/status')
+    expect(init.method).toBe('PATCH')
+    expect(JSON.parse(init.body)).toEqual({ orderStatus: 'shipped' })
+    expect(order).toEqual({ orderId: 12, orderStatus: 'shipped' })
   })
 
   it('resolves DELETE requests answered with 204 No Content', async () => {
