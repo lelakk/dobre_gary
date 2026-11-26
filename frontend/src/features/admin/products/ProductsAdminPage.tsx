@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query'
-import { Pencil, Plus, SearchX } from 'lucide-react'
-import { useState } from 'react'
+import { Plus, SearchX } from 'lucide-react'
+import { type ReactNode, useState } from 'react'
 import { categoryQueries } from '@/api/categories'
 import { productQueries } from '@/api/products'
 import type { Category, Product } from '@/api/types'
@@ -11,12 +11,18 @@ import { Button } from '@/components/ui/button'
 import { formatCount, PRODUCT_FORMS } from '@/lib/format'
 import { matchesSearchTerm } from '@/lib/search'
 import { AdminSectionHeader } from '../AdminSectionHeader'
+import { RowActions } from '../RowActions'
 import { TableSkeleton } from '../TableSkeleton'
+import { DeleteProductDialog } from './DeleteProductDialog'
 import { ProductFormDialog } from './ProductFormDialog'
 import { ProductsTable } from './ProductsTable'
 
 /** The dialog currently open on the page, if any. */
-type OpenDialog = { kind: 'create' } | { kind: 'edit'; product: Product } | null
+type OpenDialog =
+  | { kind: 'create' }
+  | { kind: 'edit'; product: Product }
+  | { kind: 'delete'; product: Product }
+  | null
 
 const bySku = (a: Product, b: Product) => a.sku.localeCompare(b.sku)
 
@@ -55,20 +61,20 @@ export function ProductsAdminPage() {
         visibleProducts={visibleProducts}
         categories={categoriesQuery.data ?? []}
         renderActions={(product) => (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => setOpenDialog({ kind: 'edit', product })}
-            aria-label={`Edytuj: ${product.name}`}
-          >
-            <Pencil />
-          </Button>
+          <RowActions
+            label={product.name}
+            onEdit={() => setOpenDialog({ kind: 'edit', product })}
+            onDelete={() => setOpenDialog({ kind: 'delete', product })}
+          />
         )}
       />
 
       {openDialog?.kind === 'create' && <ProductFormDialog product={null} onClose={closeDialog} />}
       {openDialog?.kind === 'edit' && (
         <ProductFormDialog product={openDialog.product} onClose={closeDialog} />
+      )}
+      {openDialog?.kind === 'delete' && (
+        <DeleteProductDialog product={openDialog.product} onClose={closeDialog} />
       )}
     </section>
   )
@@ -78,7 +84,7 @@ interface ProductsContentProps {
   productsQuery: UseQueryResult<Product[]>
   visibleProducts: Product[]
   categories: Category[]
-  renderActions: (product: Product) => React.ReactNode
+  renderActions: (product: Product) => ReactNode
 }
 
 function ProductsContent({
