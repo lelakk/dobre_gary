@@ -11,4 +11,5 @@ export const paths = {
     `/checkout/confirmation?${ORDER_IDS_PARAM}=${orderIds.join(',')}`,
   admin: '/admin',
   adminProducts: '/admin/products',
+  adminCategories: '/admin/categories',
 } as const

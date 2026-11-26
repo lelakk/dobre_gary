@@ -30,6 +30,7 @@ export interface PluralForms {
 
 export const PRODUCT_FORMS: PluralForms = { one: 'produkt', few: 'produkty', many: 'produktów' }
 export const ORDER_FORMS: PluralForms = { one: 'zamówienie', few: 'zamówienia', many: 'zamówień' }
+export const CATEGORY_FORMS: PluralForms = { one: 'kategoria', few: 'kategorie', many: 'kategorii' }
 
 /** Formats a count with the grammatically correct Polish noun form: 1 produkt, 3 produkty, 5 produktów. */
 export function formatCount(count: number, forms: PluralForms): string {
