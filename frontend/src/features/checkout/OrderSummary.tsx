@@ -12,7 +12,7 @@ interface OrderSummaryProps {
 }
 
 export function OrderSummary({ items, subtotal }: OrderSummaryProps) {
-  const { setOpen } = useCart()
+  const { openCart } = useCart()
 
   return (
     <section className="flex flex-col gap-4" aria-labelledby="order-summary-title">
@@ -20,7 +20,7 @@ export function OrderSummary({ items, subtotal }: OrderSummaryProps) {
         <h2 id="order-summary-title" className="text-base font-medium">
           Podsumowanie
         </h2>
-        <Button variant="link" className="h-auto p-0" onClick={() => setOpen(true)}>
+        <Button variant="link" className="h-auto p-0" onClick={openCart}>
           Edytuj koszyk
         </Button>
       </div>
