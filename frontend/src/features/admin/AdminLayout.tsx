@@ -1,4 +1,4 @@
-import { type LucideIcon, Package } from 'lucide-react'
+import { type LucideIcon, Package, Tags } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 import { paths } from '@/app/paths'
 import { cn } from '@/lib/utils'
@@ -11,6 +11,7 @@ interface AdminSection {
 
 const ADMIN_SECTIONS: AdminSection[] = [
   { to: paths.adminProducts, label: 'Produkty', icon: Package },
+  { to: paths.adminCategories, label: 'Kategorie', icon: Tags },
 ]
 
 export function AdminLayout() {
