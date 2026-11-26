@@ -3,12 +3,23 @@ import type { Address, IsoDateTime, Money } from '@/api/types'
 const LOCALE = 'pl-PL'
 
 const priceFormatter = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: 'PLN' })
+const integerFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 })
+const percentValueFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 })
 const dateTimeFormatter = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'long', timeStyle: 'short' })
 const dateFormatter = new Intl.DateTimeFormat(LOCALE, { dateStyle: 'medium' })
 const pluralRules = new Intl.PluralRules(LOCALE)
 
 export function formatPrice(amount: Money): string {
   return priceFormatter.format(amount)
+}
+
+export function formatInteger(value: number): string {
+  return integerFormatter.format(value)
+}
+
+/** Formats a percentage already on a 0–100 scale, e.g. 85.7 -> "85,7%". */
+export function formatPercent(value: number): string {
+  return `${percentValueFormatter.format(value)}%`
 }
 
 /** The backend sends LocalDateTime without a zone, so it is shown exactly as stored. */
@@ -37,6 +48,7 @@ export const PRODUCT_FORMS: PluralForms = { one: 'produkt', few: 'produkty', man
 export const ORDER_FORMS: PluralForms = { one: 'zamówienie', few: 'zamówienia', many: 'zamówień' }
 export const CATEGORY_FORMS: PluralForms = { one: 'kategoria', few: 'kategorie', many: 'kategorii' }
 export const CUSTOMER_FORMS: PluralForms = { one: 'klient', few: 'klientów', many: 'klientów' }
+export const RESULT_FORMS: PluralForms = { one: 'wynik', few: 'wyniki', many: 'wyników' }
 
 /** Formats a count with the grammatically correct Polish noun form: 1 produkt, 3 produkty, 5 produktów. */
 export function formatCount(count: number, forms: PluralForms): string {
