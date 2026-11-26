@@ -45,3 +45,8 @@ export function updateAddress(
 ): Promise<Address> {
   return put<Address>(`/users/${userId}/addresses/${addressId}`, request)
 }
+
+/** The backend refuses (409) when the address is used by an order. */
+export function deleteAddress(userId: number, addressId: number): Promise<void> {
+  return remove(`/users/${userId}/addresses/${addressId}`)
+}
