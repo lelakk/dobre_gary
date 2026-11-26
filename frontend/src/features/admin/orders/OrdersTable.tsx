@@ -18,9 +18,11 @@ interface OrdersTableProps {
   orders: Order[]
   /** Renders the status cell (static badge or inline status selector). */
   renderStatus: (order: Order) => ReactNode
+  /** Trailing action buttons shown at the end of each row (e.g. view details). */
+  renderActions: (order: Order) => ReactNode
 }
 
-export function OrdersTable({ orders, renderStatus }: OrdersTableProps) {
+export function OrdersTable({ orders, renderStatus, renderActions }: OrdersTableProps) {
   return (
     <div className="overflow-x-auto rounded-lg border border-zinc-200">
       <Table>
@@ -32,6 +34,9 @@ export function OrdersTable({ orders, renderStatus }: OrdersTableProps) {
             <TableHead className="hidden lg:table-cell">Pozycje</TableHead>
             <TableHead className="text-right">Kwota</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>
+              <span className="sr-only">Akcje</span>
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -70,6 +75,7 @@ export function OrdersTable({ orders, renderStatus }: OrdersTableProps) {
                   <Price amount={order.totalAmount} />
                 </TableCell>
                 <TableCell>{renderStatus(order)}</TableCell>
+                <TableCell className="text-right">{renderActions(order)}</TableCell>
               </TableRow>
             )
           })}
