@@ -1,8 +1,23 @@
-import { createBrowserRouter, redirect } from 'react-router'
+import type { ComponentType } from 'react'
+import { createBrowserRouter, redirect, type RouteObject } from 'react-router'
 import { SiteLayout } from '@/components/layout/SiteLayout'
+import { PageLoadingFallback } from '@/components/PageLoadingFallback'
 import { CatalogPage } from '@/features/catalog/CatalogPage'
 import { NotFoundPage } from './NotFoundPage'
 import { paths } from './paths'
+
+/**
+ * A page split into its own chunk. When the first visit goes straight to its URL, the router
+ * renders the site layout with PageLoadingFallback inside while the chunk downloads.
+ */
+function lazyPage(
+  loadPage: () => Promise<ComponentType>,
+): Pick<RouteObject, 'lazy' | 'HydrateFallback'> {
+  return {
+    lazy: async () => ({ Component: await loadPage() }),
+    HydrateFallback: PageLoadingFallback,
+  }
+}
 
 // The catalog is the landing page, so it ships with the main bundle; the other pages are
 // split into their own chunks and downloaded on first visit.
@@ -13,57 +28,53 @@ export const router = createBrowserRouter([
       { index: true, Component: CatalogPage },
       {
         path: 'product/:productId',
-        lazy: async () => ({
-          Component: (await import('@/features/product/ProductPage')).ProductPage,
-        }),
+        ...lazyPage(async () => (await import('@/features/product/ProductPage')).ProductPage),
       },
       {
         path: 'checkout',
-        lazy: async () => ({
-          Component: (await import('@/features/checkout/CheckoutPage')).CheckoutPage,
-        }),
+        ...lazyPage(async () => (await import('@/features/checkout/CheckoutPage')).CheckoutPage),
       },
       {
         path: 'checkout/confirmation',
-        lazy: async () => ({
-          Component: (await import('@/features/checkout/OrderConfirmationPage'))
-            .OrderConfirmationPage,
-        }),
+        ...lazyPage(
+          async () =>
+            (await import('@/features/checkout/OrderConfirmationPage')).OrderConfirmationPage,
+        ),
       },
       {
         path: 'admin',
-        lazy: async () => ({
-          Component: (await import('@/features/admin/AdminLayout')).AdminLayout,
-        }),
+        ...lazyPage(async () => (await import('@/features/admin/AdminLayout')).AdminLayout),
         children: [
           { index: true, loader: () => redirect(paths.adminProducts) },
           {
             path: 'products',
-            lazy: async () => ({
-              Component: (await import('@/features/admin/products/ProductsAdminPage'))
-                .ProductsAdminPage,
-            }),
+            ...lazyPage(
+              async () =>
+                (await import('@/features/admin/products/ProductsAdminPage')).ProductsAdminPage,
+            ),
           },
           {
             path: 'categories',
-            lazy: async () => ({
-              Component: (await import('@/features/admin/categories/CategoriesAdminPage'))
-                .CategoriesAdminPage,
-            }),
+            ...lazyPage(
+              async () =>
+                (await import('@/features/admin/categories/CategoriesAdminPage'))
+                  .CategoriesAdminPage,
+            ),
           },
           {
             path: 'customers',
-            lazy: async () => ({
-              Component: (await import('@/features/admin/customers/CustomersAdminPage'))
-                .CustomersAdminPage,
-            }),
+            ...lazyPage(
+              async () =>
+                (await import('@/features/admin/customers/CustomersAdminPage')).CustomersAdminPage,
+            ),
           },
           {
             path: 'customers/:userId',
-            lazy: async () => ({
-              Component: (await import('@/features/admin/customers/CustomerDetailsPage'))
-                .CustomerDetailsPage,
-            }),
+            ...lazyPage(
+              async () =>
+                (await import('@/features/admin/customers/CustomerDetailsPage'))
+                  .CustomerDetailsPage,
+            ),
           },
         ],
       },
