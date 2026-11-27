@@ -78,3 +78,29 @@ Requires Node.js 22 or newer; see [`frontend/README.md`](frontend/README.md).
   details); and inspect the 9 analytical SQL reports from `queries.sql` plus the
   `v_product_stock_summary` view. Rules enforced by the database are explained in the UI, e.g. a
   customer with orders or an address used in an order cannot be deleted.
+
+## Screenshots
+
+### Catalog
+
+![Catalog](docs/screenshots/Dobre_Gary_Katalog.png)
+
+### Checkout
+
+![Checkout](docs/screenshots/Dobre_Gary_Kasa.png)
+
+### Admin panel - Products
+
+![Admin panel - Products](docs/screenshots/Dobre_Gary_Admin_Produkty.png)
+
+### Admin panel - Orders
+
+![Admin panel - Orders](docs/screenshots/Dobre_Gary_Admin_Zamowienia.png)
+
+### Admin panel - Reports
+
+![Admin panel - Reports](docs/screenshots/Dobre_Gary_Admin_Raport.png)
+
+## Database schema (ERD)
+
+![Database ERD](docs/images/full-diagram-without-connections-highlighted.png)
