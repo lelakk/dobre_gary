@@ -39,12 +39,14 @@ When a file is missing, a placeholder with the SKU is shown, so the shop works w
 
 ## Admin panel
 
-| Section   | Route                      | What it does                                                                      |
-| --------- | -------------------------- | --------------------------------------------------------------------------------- |
-| Produkty  | `/admin/products`          | Search, create, edit and delete products together with their stock and categories |
-| Kategorie | `/admin/categories`        | Category tree with product counts; create, edit (no cycles possible) and delete   |
-| Klienci   | `/admin/customers`         | Search, create (with password), edit and delete customer accounts                 |
-| Klient    | `/admin/customers/:userId` | Customer details and their addresses: add, edit and delete                        |
+| Section    | Route                      | What it does                                                                                  |
+| ---------- | -------------------------- | --------------------------------------------------------------------------------------------- |
+| Produkty   | `/admin/products`          | Search, create, edit and delete products together with their stock and categories             |
+| Kategorie  | `/admin/categories`        | Category tree with product counts; create, edit (no cycles possible) and delete               |
+| Klienci    | `/admin/customers`         | Search, create (with password), edit and delete customer accounts                             |
+| Klient     | `/admin/customers/:userId` | Customer details and their addresses: add, edit and delete                                    |
+| Zamówienia | `/admin/orders`            | Search and filter orders, view line items and customer addresses, change order status         |
+| Raporty    | `/admin/reports`           | Browse the 9 analytical SQL queries from `queries.sql` and the `v_product_stock_summary` view |
 
 Forms mirror the validation of the backend DTOs with Polish messages. Rules enforced by the database
 are explained instead of showing raw errors: a duplicate SKU or e-mail (409) appears under its field,
@@ -71,8 +73,9 @@ src/
 | `GET /api/categories`                                                                                       | Category filter, product categories and the admin category tree                                                                                            |
 | `GET /api/users`, `GET /api/users/{id}`, `GET /api/users/{id}/addresses`                                    | Customer and address selection at checkout, admin customer pages                                                                                           |
 | `POST /api/orders/quick`                                                                                    | Placing orders through the `sp_place_single_product_order` stored procedure, which checks and decrements stock, computes the total and creates the payment |
-| `GET /api/orders/{id}`                                                                                      | Order confirmation                                                                                                                                         |
-| `POST`, `PUT`, `DELETE` on `/api/products`, `/api/categories`, `/api/users` and `/api/users/{id}/addresses` | Admin panel                                                                                                                                                |
+| `GET /api/orders`, `GET /api/orders/{id}`, `PATCH /api/orders/{id}/status`                                  | Order confirmation, admin order list and status changes                                                                                                    |
+| `GET /api/reports/*`, `GET /api/products/stock-summary`                                                     | Admin analytical reports tab (all 9 queries from `queries.sql` and the `v_product_stock_summary` view)                                                     |
+| `POST`, `PUT`, `DELETE` on `/api/products`, `/api/categories`, `/api/users` and `/api/users/{id}/addresses` | Admin panel CRUD                                                                                                                                           |
 
 ## Known limitations
 
