@@ -74,5 +74,5 @@ jobs:
           for file in schema.sql mock_data.sql queries.sql; do
             echo "Running $file..."
             docker run --rm --network host -i mariadb:13.0.2 \
-              mariadb -h 127.0.0.1 -P 3306 -uroot -proot < "$file"
+              mariadb -h 127.0.0.1 -P 3306 -uroot -proot projekt < "$file"
           done
