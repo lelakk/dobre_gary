@@ -1,4 +1,5 @@
 # Dobre Gary
+[![CI](https://github.com/lelakk/dobre_gary/actions/workflows/ci.yml/badge.svg)](https://github.com/lelakk/dobre_gary/actions/workflows/ci.yml)
 
 Database course project: an online kitchenware store built on a MariaDB database, with a Spring Boot
 REST API and a React application (storefront and admin panel).
