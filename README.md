@@ -22,7 +22,7 @@ REST API and a React application (storefront and admin panel).
 docker compose up -d
 ```
 
-Starts MariaDB on port 3306 and, on the first start, runs `schema.sql`, `mock_data.sql` and
+Starts MariaDB 13.0.2 on port 3306 and, on the first start, runs `schema.sql`, `mock_data.sql` and
 `queries.sql` in that order. Credentials default to `root`/`root` and the `projekt` database; they can
 be changed in `.env` (see `.env.example`). To start over with fresh seed data:
 `docker compose down -v && docker compose up -d`.
@@ -74,5 +74,7 @@ Requires Node.js 22 or newer; see [`frontend/README.md`](frontend/README.md).
   through the stored procedure (stock errors from the trigger are shown to the shopper) and order
   confirmation.
 - **Admin panel (`/admin`):** create, edit and delete products (with stock), categories (as a tree),
-  customers and their addresses. Rules enforced by the database are explained in the UI, e.g. a
+  customers and their addresses; browse, filter and update order statuses (with item and address
+  details); and inspect the 9 analytical SQL reports from `queries.sql` plus the
+  `v_product_stock_summary` view. Rules enforced by the database are explained in the UI, e.g. a
   customer with orders or an address used in an order cannot be deleted.
