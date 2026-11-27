@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (Java 21 / Maven)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Run unit tests
+        run: mvn -B test
+
+  frontend:
+    name: Frontend (Node 22 / Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Check formatting
+        run: npm run format:check
+      - name: Run unit tests
+        run: npm test
+      - name: Build
+        run: npm run build
+
+  database:
+    name: Database (MariaDB 13.0.2)
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:13.0.2
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: projekt
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify schema.sql, mock_data.sql and queries.sql
+        run: |
+          for file in schema.sql mock_data.sql queries.sql; do
+            echo "Running $file..."
+            docker run --rm --network host -i mariadb:13.0.2 \
+              mariadb -h 127.0.0.1 -P 3306 -uroot -proot < "$file"
+          done
