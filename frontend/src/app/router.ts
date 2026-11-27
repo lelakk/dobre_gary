@@ -81,6 +81,12 @@ export const router = createBrowserRouter([
             ),
           },
           {
+            path: 'orders',
+            ...lazyPage(
+              async () => (await import('@/features/admin/orders/OrdersAdminPage')).OrdersAdminPage,
+            ),
+          },
+          {
             path: 'reports',
             ...lazyPage(
               async () =>
